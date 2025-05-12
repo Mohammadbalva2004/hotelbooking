@@ -32,8 +32,13 @@ class CommonBottomNavBar extends StatelessWidget {
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.notifications_none),
-          activeIcon: Icon(Icons.notifications),
+          icon: Icon(Icons.assignment_outlined),
+          activeIcon: Icon(Icons.assignment_outlined),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.percent_outlined),
+          activeIcon: Icon(Icons.percent),
           label: '',
         ),
         BottomNavigationBarItem(

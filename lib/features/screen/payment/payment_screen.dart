@@ -109,27 +109,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
               isTotal: true,
             ),
 
-            //   Padding(
-            //     padding: const EdgeInsets.all(20),
-            //     child: ElevatedButton(
-            //       style: ElevatedButton.styleFrom(
-            //         minimumSize: const Size.fromHeight(50),
-            //         backgroundColor: const Color.fromARGB(255, 17, 144, 248),
-            //         shape: RoundedRectangleBorder(
-            //           borderRadius: BorderRadius.circular(10),
-            //         ),
-            //       ),
-            //       onPressed: () => _handlePayment(),
-            //       child: const Text(
-            //         "Pay Now",
-            //         style: TextStyle(
-            //           fontSize: 20,
-            //           fontWeight: FontWeight.bold,
-            //           color: Colors.white,
-            //         ),
-            //       ),
-            //     ),
-            //   ),
             GestureDetector(
               onTap: () {
                 showModalBottomSheet(

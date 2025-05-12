@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hotelbooking/features/screen/booking/booking_screen.dart';
 import 'package:hotelbooking/features/screen/filter/filter_screen.dart';
 
 import 'package:hotelbooking/features/screen/hoteldetail/hotel_detail_screen.dart';
+import 'package:hotelbooking/features/screen/profile/profile_screen.dart';
+import 'package:hotelbooking/features/widgets/commanbottomnavbar/common_bottom_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,6 +18,20 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _bestHotelsScrollController = ScrollController();
   final GlobalKey _bestHotelsKey = GlobalKey();
   final GlobalKey _nearbyHotelsKey = GlobalKey();
+
+  void _navigateToTab(BuildContext context, int index) {
+    if (index == 2) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const BookingScreen()),
+      );
+    } else if (index == 4) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const ProfileScreen()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,25 +74,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
+
+      bottomNavigationBar: CommonBottomNavBar(
         currentIndex: 0,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.black,
-        showUnselectedLabels: true,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.inventory_2_outlined),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_outlined),
-            label: '',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.percent), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: ''),
-        ],
-        type: BottomNavigationBarType.fixed,
+        onTap: (index) => _navigateToTab(context, index),
       ),
     );
   }

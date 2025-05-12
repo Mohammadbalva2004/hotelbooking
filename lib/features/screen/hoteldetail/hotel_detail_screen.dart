@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/payment/payment_screen.dart';
+import 'package:hotelbooking/features/screen/review/review_screen.dart';
 
 class HotelDetailScreen extends StatefulWidget {
   const HotelDetailScreen({super.key});
@@ -74,7 +75,15 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const StarRating(rating: 5.0, reviewCount: 120),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ReviewScreen()),
+              );
+            },
+            child: const StarRating(rating: 5.0, reviewCount: 120),
+          ),
           const SizedBox(height: 10),
           const Text(
             "Malon Greens",
