@@ -23,6 +23,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   String? _selectedGender;
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -45,6 +47,7 @@ class _SignupScreenState extends State<SignupScreen> {
     bool readOnly = false,
     VoidCallback? onTap,
     TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
   }) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
@@ -53,6 +56,7 @@ class _SignupScreenState extends State<SignupScreen> {
         readOnly: readOnly,
         onTap: onTap,
         keyboardType: keyboardType,
+        validator: validator,
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,
@@ -157,48 +161,160 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
             ),
             SizedBox(height: 20),
+
             // Name Field
-            customTextFormField(
-              controller: nameController,
-              labelText: "Name",
-              hintText: "Enter Name",
-              icon: Icons.person,
+            // customTextFormField(
+            //   controller: nameController,
+            //   labelText: "Name",
+            //   hintText: "Enter Name",
+            //   icon: Icons.person,
+            //   validator: (value) {
+            //     if (value == null || value.trim().isEmpty) {
+            //       return 'Name is required';
+            //     } else if (value.length < 3) {
+            //       return 'Name must be at least 3 characters';
+            //     }
+            //     return null;
+            //   },
+            // ),
+            // // Email Field
+            // customTextFormField(
+            //   controller: emailController,
+            //   labelText: "Email Address",
+            //   hintText: "Enter Email",
+            //   icon: Icons.email,
+            //   keyboardType: TextInputType.emailAddress,
+            //   validator: (value) {
+            //     if (value == null || value.trim().isEmpty) {
+            //       return 'Email is required';
+            //     } else if (!RegExp(
+            //       r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
+            //     ).hasMatch(value)) {
+            //       return 'Enter a valid email';
+            //     }
+            //     return null;
+            //   },
+            // ),
+            // // Phone Field
+            // customTextFormField(
+            //   controller: phoneController,
+            //   labelText: "Mobile Number",
+            //   hintText: "Enter Mobile Number",
+            //   icon: Icons.phone,
+            //   keyboardType: TextInputType.phone,
+            //   validator: (value) {
+            //     if (value == null || value.trim().isEmpty) {
+            //       return 'Phone number is required';
+            //     } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+            //       return 'Enter a valid 10-digit number';
+            //     }
+            //     return null;
+            //   },
+            // ),
+            // // Date of Birth Field
+            // customTextFormField(
+            //   controller: dateController,
+            //   labelText: "Date Of Birth",
+            //   hintText: "Enter Date of Birth",
+            //   icon: Icons.calendar_today,
+            //   readOnly: true,
+            //   onTap: () => _selectDate(context),
+            //   validator: (value) {
+            //     if (value == null || value.isEmpty) {
+            //       return 'Date of birth is required';
+            //     }
+            //     return null;
+            //   },
+            // ),
+            // // Gender Selection
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  customTextFormField(
+                    controller: nameController,
+                    labelText: "Name",
+                    hintText: "Enter Name",
+                    icon: Icons.person,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Name is required';
+                      } else if (value.length < 3) {
+                        return 'Name must be at least 3 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                  customTextFormField(
+                    controller: emailController,
+                    labelText: "Email Address",
+                    hintText: "Enter Email",
+                    icon: Icons.email,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Email is required';
+                      } else if (!RegExp(
+                        r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      ).hasMatch(value)) {
+                        return 'Enter a valid email';
+                      }
+                      return null;
+                    },
+                  ),
+                  customTextFormField(
+                    controller: phoneController,
+                    labelText: "Mobile Number",
+                    hintText: "Enter Mobile Number",
+                    icon: Icons.phone,
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Phone number is required';
+                      } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                        return 'Enter a valid 10-digit number';
+                      }
+                      return null;
+                    },
+                  ),
+                  customTextFormField(
+                    controller: dateController,
+                    labelText: "Date Of Birth",
+                    hintText: "Enter Date of Birth",
+                    icon: Icons.calendar_today,
+                    readOnly: true,
+                    onTap: () => _selectDate(context),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Date of birth is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  // add more fields or gender selection here if needed
+                ],
+              ),
             ),
-            // Email Field
-            customTextFormField(
-              controller: emailController,
-              labelText: "Email Address",
-              hintText: "Enter Email",
-              icon: Icons.email,
-              keyboardType: TextInputType.emailAddress,
-            ),
-            // Phone Field
-            customTextFormField(
-              controller: phoneController,
-              labelText: "Mobile Number",
-              hintText: "Enter Mobile Number",
-              icon: Icons.phone,
-              keyboardType: TextInputType.phone,
-            ),
-            // Date of Birth Field
-            customTextFormField(
-              controller: dateController,
-              labelText: "Date Of Birth",
-              hintText: "Enter Date of Birth",
-              icon: Icons.calendar_today,
-              readOnly: true,
-              onTap: () => _selectDate(context),
-            ),
-            // Gender Selection
+
             genderSelection(),
             SizedBox(height: 20),
-            // Register Button
+
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SigninScreen()),
-                );
+                if (_formKey.currentState!.validate()) {
+                  // ✅ Form is valid — navigate
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SigninScreen()),
+                  );
+                } else {
+                  // ❌ Invalid — show error
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Please fix the errors in the form'),
+                    ),
+                  );
+                }
               },
               child: Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20),
@@ -222,6 +338,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
             ),
+
             SizedBox(height: 30),
             // Login Prompt
             Row(

@@ -15,6 +15,8 @@ class _SigninScreenState extends State<SigninScreen> {
   final TextEditingController passwordController = TextEditingController();
   bool _obscureText = true;
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,29 +47,58 @@ class _SigninScreenState extends State<SigninScreen> {
             const SizedBox(height: 10),
             const DividerWithText(),
             const SizedBox(height: 20),
-            CustomTextField(
-              controller: emailController,
-              labelText: "Email Address",
-              hintText: "Enter Email",
-              prefixIcon: Icons.email,
-              obscureText: false,
-            ),
-            CustomTextField(
-              controller: passwordController,
-              labelText: "Password",
-              hintText: "Enter Password",
-              prefixIcon: Icons.lock,
-              obscureText: _obscureText,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscureText ? Icons.visibility_off : Icons.visibility,
-                  color: Colors.grey,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  CustomTextField(
+                    controller: emailController,
+                    labelText: "Email Address",
+                    hintText: "Enter Email",
+                    prefixIcon: Icons.email,
+                    obscureText: false,
+                    validator: (value) {
+                      // Check if the value is null or empty
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Email is required';
+                      }
+                      // Check if the value matches the regex for a valid email
+                      else if (!RegExp(
+                        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                      ).hasMatch(value.trim())) {
+                        return 'Enter a valid email';
+                      }
+                      return null;
+                    },
+                  ),
+                  // Password TextField with validation
+                  CustomTextField(
+                    controller: passwordController,
+                    labelText: "Password",
+                    hintText: "Enter Password",
+                    prefixIcon: Icons.lock,
+                    obscureText: _obscureText,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Password is required';
+                      } else if (value.length < 6) {
+                        return 'Password must be at least 6 characters long';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
               ),
             ),
             Padding(
@@ -107,12 +138,20 @@ class _SigninScreenState extends State<SigninScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
+                  // Validate the form before proceeding
+                  if (_formKey.currentState!.validate()) {
+                    // All fields are valid, proceed to HomeScreen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomeScreen(),
+                      ),
+                    );
+                  } else {
+                    // If the form is invalid, show a message or do something
+                    print('Form is not valid');
+                  }
                 },
                 child: const Text(
                   "Login",
@@ -171,6 +210,7 @@ class CustomTextField extends StatelessWidget {
   final IconData prefixIcon;
   final bool obscureText;
   final Widget? suffixIcon;
+  final String? Function(String?)? validator;
 
   const CustomTextField({
     super.key,
@@ -180,6 +220,7 @@ class CustomTextField extends StatelessWidget {
     required this.prefixIcon,
     required this.obscureText,
     this.suffixIcon,
+    this.validator,
   });
 
   @override
@@ -189,6 +230,7 @@ class CustomTextField extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
+        validator: validator,
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,
