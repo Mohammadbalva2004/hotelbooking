@@ -745,6 +745,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     // Implement guest editing logic
   }
 
+  // ignore: unused_element
   void _handlePayment() {
     // Implement payment logic
   }

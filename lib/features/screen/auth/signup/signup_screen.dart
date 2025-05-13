@@ -20,8 +20,11 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   String? _selectedGender;
+
+  bool _obscureText = true;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -43,10 +46,12 @@ class _SignupScreenState extends State<SignupScreen> {
     required TextEditingController controller,
     required String labelText,
     required String hintText,
-    IconData? icon,
+    IconData? prefixIcon,
+    Widget? suffixIcon,
     bool readOnly = false,
     VoidCallback? onTap,
     TextInputType keyboardType = TextInputType.text,
+    bool obscureText = false,
     String? Function(String?)? validator,
   }) {
     return Padding(
@@ -56,14 +61,16 @@ class _SignupScreenState extends State<SignupScreen> {
         readOnly: readOnly,
         onTap: onTap,
         keyboardType: keyboardType,
+        obscureText: obscureText,
         validator: validator,
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,
-          //floatingLabelBehavior: FloatingLabelBehavior.always,
           filled: true,
           fillColor: Colors.white,
-          prefixIcon: icon != null ? Icon(icon, color: Colors.grey) : null,
+          prefixIcon:
+              prefixIcon != null ? Icon(prefixIcon, color: Colors.grey) : null,
+          suffixIcon: suffixIcon,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
@@ -137,7 +144,7 @@ class _SignupScreenState extends State<SignupScreen> {
           children: [
             // Logo
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 200, top: 100),
+              padding: const EdgeInsets.only(left: 20, right: 200, top: 50),
               child: Image.asset("assets/images/splash.png"),
             ),
             // Title
@@ -162,71 +169,6 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             SizedBox(height: 20),
 
-            // Name Field
-            // customTextFormField(
-            //   controller: nameController,
-            //   labelText: "Name",
-            //   hintText: "Enter Name",
-            //   icon: Icons.person,
-            //   validator: (value) {
-            //     if (value == null || value.trim().isEmpty) {
-            //       return 'Name is required';
-            //     } else if (value.length < 3) {
-            //       return 'Name must be at least 3 characters';
-            //     }
-            //     return null;
-            //   },
-            // ),
-            // // Email Field
-            // customTextFormField(
-            //   controller: emailController,
-            //   labelText: "Email Address",
-            //   hintText: "Enter Email",
-            //   icon: Icons.email,
-            //   keyboardType: TextInputType.emailAddress,
-            //   validator: (value) {
-            //     if (value == null || value.trim().isEmpty) {
-            //       return 'Email is required';
-            //     } else if (!RegExp(
-            //       r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
-            //     ).hasMatch(value)) {
-            //       return 'Enter a valid email';
-            //     }
-            //     return null;
-            //   },
-            // ),
-            // // Phone Field
-            // customTextFormField(
-            //   controller: phoneController,
-            //   labelText: "Mobile Number",
-            //   hintText: "Enter Mobile Number",
-            //   icon: Icons.phone,
-            //   keyboardType: TextInputType.phone,
-            //   validator: (value) {
-            //     if (value == null || value.trim().isEmpty) {
-            //       return 'Phone number is required';
-            //     } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-            //       return 'Enter a valid 10-digit number';
-            //     }
-            //     return null;
-            //   },
-            // ),
-            // // Date of Birth Field
-            // customTextFormField(
-            //   controller: dateController,
-            //   labelText: "Date Of Birth",
-            //   hintText: "Enter Date of Birth",
-            //   icon: Icons.calendar_today,
-            //   readOnly: true,
-            //   onTap: () => _selectDate(context),
-            //   validator: (value) {
-            //     if (value == null || value.isEmpty) {
-            //       return 'Date of birth is required';
-            //     }
-            //     return null;
-            //   },
-            // ),
-            // // Gender Selection
             Form(
               key: _formKey,
               child: Column(
@@ -235,7 +177,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     controller: nameController,
                     labelText: "Name",
                     hintText: "Enter Name",
-                    icon: Icons.person,
+                    prefixIcon: Icons.person,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return 'Name is required';
@@ -249,7 +191,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     controller: emailController,
                     labelText: "Email Address",
                     hintText: "Enter Email",
-                    icon: Icons.email,
+                    prefixIcon: Icons.email,
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -263,10 +205,37 @@ class _SignupScreenState extends State<SignupScreen> {
                     },
                   ),
                   customTextFormField(
+                    controller: passwordController,
+                    labelText: "Password",
+                    hintText: "Enter Password",
+                    prefixIcon: Icons.lock,
+                    obscureText: _obscureText,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Password is required';
+                      } else if (value.length < 6) {
+                        return 'Password must be at least 6 characters long';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  customTextFormField(
                     controller: phoneController,
                     labelText: "Mobile Number",
                     hintText: "Enter Mobile Number",
-                    icon: Icons.phone,
+                    prefixIcon: Icons.phone,
                     keyboardType: TextInputType.phone,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -281,7 +250,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     controller: dateController,
                     labelText: "Date Of Birth",
                     hintText: "Enter Date of Birth",
-                    icon: Icons.calendar_today,
+                    prefixIcon: Icons.calendar_today,
                     readOnly: true,
                     onTap: () => _selectDate(context),
                     validator: (value) {
