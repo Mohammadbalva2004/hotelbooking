@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/profile/profile_screen.dart';
+import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
+import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
 import 'package:intl/intl.dart';
 
 class ProfileEditScreen extends StatefulWidget {
@@ -122,28 +124,17 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   Widget _buildUpdateButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
-      child: SizedBox(
-        height: 50,
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
+      child: CustomButton(
+        text: "Logout",
         width: double.infinity,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF1190F8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ProfileScreen()),
-            );
-          },
-          child: const Text(
-            'Update',
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-        ),
+
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+          );
+        },
       ),
     );
   }
@@ -151,16 +142,18 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black, size: 30),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          "Edit Profile",
-          style: TextStyle(color: Colors.black, fontSize: 20),
+      appBar: CommonAppBar(
+        mainTitle: 'Edit Profile',
+        leadingIcon: Icons.arrow_back_ios,
+        onLeadingTap: () => Navigator.pop(context),
+        elevation: 2,
+        height: 60,
+        leadingIconColor: Colors.black,
+
+        mainTitleStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
         ),
       ),
       body: SingleChildScrollView(

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/auth/otp/otp_screen.dart';
+import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
+import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
+import 'package:hotelbooking/features/widgets/commantextfromfild/Common_Text_FormField.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -15,7 +18,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: CommonAppBar(
+        leadingIcon: Icons.arrow_back_ios,
+        onLeadingTap: () => Navigator.pop(context),
+        elevation: 2,
+        height: 60,
+        leadingIconColor: Colors.black,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -29,17 +38,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             _buildContinueButton(context),
           ],
         ),
-      ),
-    );
-  }
-
-  AppBar _buildAppBar(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      centerTitle: true,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.black, size: 30),
-        onPressed: () => Navigator.pop(context),
       ),
     );
   }
@@ -75,85 +73,60 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _buildPhoneNumberField() {
-    return _buildInputField(
-      controller: numberController,
-      labelText: "Send otp via SMS",
-      hintText: "Enter mobile number",
-      icon: Icons.phone,
-      keyboardType: TextInputType.number,
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: CommonTextFormField(
+        //controller: phoneController,
+        labelText: "Send otp via SMS",
+        hintText: "Enter mobile number",
+        prefixIcon: Icon(Icons.phone),
+        keyboardType: TextInputType.phone,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Phone number is required';
+          } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+            return 'Enter a valid 10-digit number';
+          }
+          return null;
+        },
+      ),
     );
   }
 
   Widget _buildEmailField() {
-    return _buildInputField(
-      controller: emailController,
-      labelText: "Send otp via Email",
-      hintText: "Enter Email",
-      icon: Icons.email,
-      keyboardType: TextInputType.emailAddress,
-    );
-  }
-
-  Widget _buildInputField({
-    required TextEditingController controller,
-    required String labelText,
-    required String hintText,
-    required IconData icon,
-    required TextInputType keyboardType,
-  }) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: TextFormField(
-        keyboardType: keyboardType,
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: labelText,
-          hintText: hintText,
-          filled: true,
-          fillColor: Colors.white,
-          prefixIcon: Icon(icon, color: Colors.grey),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: const Color.fromARGB(255, 39, 98, 146),
-              width: 1.5,
-            ),
-          ),
-        ),
+      child: CommonTextFormField(
+        controller: emailController,
+        labelText: "Send otp via Email",
+        hintText: "Enter Email",
+        prefixIcon: Icon(Icons.email),
+        keyboardType: TextInputType.emailAddress,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Email is required';
+          } else if (!RegExp(
+            r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
+          ).hasMatch(value)) {
+            return 'Enter a valid email';
+          }
+          return null;
+        },
       ),
     );
   }
 
   Widget _buildContinueButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          minimumSize: const Size.fromHeight(50),
-          backgroundColor: const Color.fromARGB(255, 17, 144, 248),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-        onPressed: () {
+    return CustomButton(
+      text: "Continue",
+      onPressed: () {
+        {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const OtpScreen()),
           );
-        },
-        child: const Text(
-          "Continue",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
+        }
+      },
     );
   }
 }

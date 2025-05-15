@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? upperTitle;
-  final String mainTitle;
+  final String? mainTitle;
   final IconData leadingIcon;
   final VoidCallback onLeadingTap;
   final IconData? actionIcon;
@@ -17,7 +17,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CommonAppBar({
     Key? key,
     this.upperTitle,
-    required this.mainTitle,
+    this.mainTitle,
     required this.leadingIcon,
     required this.onLeadingTap,
     this.actionIcon,
@@ -53,17 +53,19 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
                   upperTitleStyle ??
                   const TextStyle(fontSize: 16, color: Colors.grey),
             ),
-          Text(
-            mainTitle,
-            style:
-                mainTitleStyle ??
-                const TextStyle(
-                  fontSize: 20,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                ),
-          ),
+
+          if (mainTitle != null)
+            Text(
+              mainTitle!,
+              style:
+                  mainTitleStyle ??
+                  const TextStyle(
+                    fontSize: 20,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+            ),
         ],
       ),
       actions: [

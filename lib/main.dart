@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/splash/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; // This should exist
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

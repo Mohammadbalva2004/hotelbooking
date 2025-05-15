@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/home/home_screen.dart';
+import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
+import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
+import 'package:hotelbooking/features/widgets/commantextfromfild/Common_Text_FormField.dart';
 
 void main() {
   runApp(const MaterialApp(home: PaymentScreen()));
@@ -23,20 +26,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black, size: 30),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          "Confirm & Pay",
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+      appBar: CommonAppBar(
+        mainTitle: 'confirm & Pay',
+        leadingIcon: Icons.arrow_back_ios,
+        onLeadingTap: () => Navigator.pop(context),
+        elevation: 2,
+        height: 60,
+        leadingIconColor: Colors.black,
+
+        mainTitleStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
         ),
       ),
       body: SingleChildScrollView(
@@ -108,140 +109,95 @@ class _PaymentScreenState extends State<PaymentScreen> {
               value: "\$320.00",
               isTotal: true,
             ),
-
-            GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
-                    ),
-                  ),
-                  backgroundColor: Colors.white,
-                  builder: (context) {
-                    return StatefulBuilder(
-                      builder: (context, setState) {
-                        return Container(
-                          height: 385,
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            // crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                "assets/icon/submit.jpg",
-                                height: 150,
-                                width: 150,
-                              ),
-                              Text(
-                                "Payment Received ",
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                "Successfully",
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Congratulation",
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      //ontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Image.asset(
-                                    "assets/icon/party.png",
-                                    height: 30,
-                                    width: 30,
-                                  ),
-                                ],
-                              ),
-
-                              Text(
-                                "Your booking has been confirmed",
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  //ontWeight: FontWeight.bold,
-                                ),
-                              ),
-
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 10,
-                                  right: 10,
-                                  top: 20,
-                                ),
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    minimumSize: const Size.fromHeight(50),
-                                    backgroundColor: const Color.fromARGB(
-                                      255,
-                                      17,
-                                      144,
-                                      248,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) => const HomeScreen(),
-                                      ),
-                                    );
-                                  },
-                                  child: const Text(
-                                    "Back To Home",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Container(
-                  height: 50,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-
-                    color: const Color.fromARGB(255, 17, 144, 248),
-                  ),
-
-                  child: Center(
-                    child: Text(
-                      "Pay Now",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: CustomButton(
+                text: "Pay Now",
+                width: double.infinity,
+                height: 50,
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
                       ),
                     ),
-                  ),
-                ),
+                    backgroundColor: Colors.white,
+                    builder: (context) {
+                      return StatefulBuilder(
+                        builder: (context, setState) {
+                          return Container(
+                            height: 385,
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Image.asset(
+                                  "assets/icon/submit.jpg",
+                                  height: 150,
+                                  width: 150,
+                                ),
+                                const Text(
+                                  "Payment Received ",
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const Text(
+                                  "Successfully",
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      "Congratulation",
+                                      style: TextStyle(fontSize: 17),
+                                    ),
+                                    Image.asset(
+                                      "assets/icon/party.png",
+                                      height: 30,
+                                      width: 30,
+                                    ),
+                                  ],
+                                ),
+                                const Text(
+                                  "Your booking has been confirmed",
+                                  style: TextStyle(fontSize: 17),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 10,
+                                    right: 10,
+                                    top: 20,
+                                  ),
+                                  child: CustomButton(
+                                    text: "Back To Home",
+                                    width: double.infinity,
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => const HomeScreen(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],
@@ -413,7 +369,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               padding: const EdgeInsets.all(10.0),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.white, // Light grey background
+                                  color: Colors.white,
                                   borderRadius: BorderRadius.circular(10),
                                   boxShadow: [
                                     BoxShadow(
@@ -424,42 +380,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                     ),
                                   ],
                                 ),
-                                child: TextField(
+                                child: CommonTextFormField(
                                   controller: cardNumberController,
-                                  decoration: InputDecoration(
-                                    labelText: 'Card Number',
-                                    labelStyle: TextStyle(
-                                      color: Color.fromARGB(255, 17, 144, 248),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                    // hintText: '**** **** **** 3456',
-                                    border: OutlineInputBorder(),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Color.fromARGB(
-                                          255,
-                                          17,
-                                          144,
-                                          248,
-                                        ),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Color.fromARGB(
-                                          255,
-                                          17,
-                                          144,
-                                          248,
-                                        ),
-                                      ),
-                                    ),
-                                    contentPadding: EdgeInsets.symmetric(
-                                      vertical: 15,
-                                      horizontal: 10,
-                                    ),
+                                  labelText: 'Card Number',
+                                  labelStyle: const TextStyle(
+                                    color: Color.fromARGB(255, 17, 144, 248),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
                                   ),
+                                  // prefixIcon: const Icon(Icons.credit_card),
                                   keyboardType: TextInputType.number,
                                 ),
                               ),
@@ -480,42 +409,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                     ),
                                   ],
                                 ),
-                                child: TextField(
+                                child: CommonTextFormField(
                                   controller: cardHolderController,
-                                  decoration: InputDecoration(
-                                    labelText: "CardHolder Name",
-                                    labelStyle: TextStyle(
-                                      color: Color.fromARGB(255, 17, 144, 248),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                    // hintText: 'Ex: Bruno Pham',
-                                    border: OutlineInputBorder(),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Color.fromARGB(
-                                          255,
-                                          17,
-                                          144,
-                                          248,
-                                        ),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Color.fromARGB(
-                                          255,
-                                          17,
-                                          144,
-                                          248,
-                                        ),
-                                      ),
-                                    ),
-                                    contentPadding: EdgeInsets.symmetric(
-                                      vertical: 15,
-                                      horizontal: 10,
-                                    ),
+                                  labelText: 'Card Holder Name',
+                                  labelStyle: const TextStyle(
+                                    color: Color.fromARGB(255, 17, 144, 248),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
                                   ),
+                                  // prefixIcon: const Icon(Icons.credit_card),
                                   keyboardType: TextInputType.text,
                                 ),
                               ),
@@ -543,47 +445,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                           ),
                                         ],
                                       ),
-                                      child: TextField(
+                                      child: CommonTextFormField(
                                         controller: expiryDateController,
-                                        decoration: InputDecoration(
-                                          labelText: 'Expiration Date',
-                                          labelStyle: TextStyle(
-                                            color: Color.fromARGB(
-                                              255,
-                                              17,
-                                              144,
-                                              248,
-                                            ),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
+                                        labelText: 'Expiry Date',
+                                        labelStyle: const TextStyle(
+                                          color: Color.fromARGB(
+                                            255,
+                                            17,
+                                            144,
+                                            248,
                                           ),
-                                          //hintText: '03/22',
-                                          border: OutlineInputBorder(),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color.fromARGB(
-                                                255,
-                                                17,
-                                                144,
-                                                248,
-                                              ),
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color.fromARGB(
-                                                255,
-                                                17,
-                                                144,
-                                                248,
-                                              ),
-                                            ),
-                                          ),
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 15,
-                                            horizontal: 10,
-                                          ),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
                                         ),
+                                        // prefixIcon: const Icon(Icons.credit_card),
                                         keyboardType: TextInputType.datetime,
                                       ),
                                     ),
@@ -609,47 +484,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                           ),
                                         ],
                                       ),
-                                      child: TextField(
+                                      child: CommonTextFormField(
                                         controller: cvvController,
-                                        decoration: InputDecoration(
-                                          labelText: 'CVV',
-                                          labelStyle: TextStyle(
-                                            color: Color.fromARGB(
-                                              255,
-                                              17,
-                                              144,
-                                              248,
-                                            ),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
+                                        labelText: 'CVV',
+                                        labelStyle: const TextStyle(
+                                          color: Color.fromARGB(
+                                            255,
+                                            17,
+                                            144,
+                                            248,
                                           ),
-                                          //  hintText: 'Ex: 123',
-                                          border: OutlineInputBorder(),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color.fromARGB(
-                                                255,
-                                                17,
-                                                144,
-                                                248,
-                                              ),
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color.fromARGB(
-                                                255,
-                                                17,
-                                                144,
-                                                248,
-                                              ),
-                                            ),
-                                          ),
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 15,
-                                            horizontal: 10,
-                                          ),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
                                         ),
+                                        // prefixIcon: const Icon(Icons.credit_card),
                                         keyboardType: TextInputType.number,
                                       ),
                                     ),
@@ -664,28 +512,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 right: 10,
                                 top: 20,
                               ),
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: const Size.fromHeight(50),
-                                  backgroundColor: const Color.fromARGB(
-                                    255,
-                                    17,
-                                    144,
-                                    248,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
+                              child: CustomButton(
+                                text: "Add Card",
                                 onPressed: () => Navigator.pop(context),
-                                child: const Text(
-                                  "Add Card",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
                               ),
                             ),
                           ],

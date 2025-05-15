@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/auth/forgotpassword/forgot_password_screen.dart';
 import 'package:hotelbooking/features/screen/auth/signup/signup_screen.dart';
 import 'package:hotelbooking/features/screen/home/home_screen.dart';
+import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
+import 'package:hotelbooking/features/widgets/commantextfromfild/Common_Text_FormField.dart';
 
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
@@ -49,56 +51,56 @@ class _SigninScreenState extends State<SigninScreen> {
             const SizedBox(height: 20),
             Form(
               key: _formKey,
-              child: Column(
-                children: [
-                  CustomTextField(
-                    controller: emailController,
-                    labelText: "Email Address",
-                    hintText: "Enter Email",
-                    prefixIcon: Icons.email,
-                    obscureText: false,
-                    validator: (value) {
-                      // Check if the value is null or empty
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Email is required';
-                      }
-                      // Check if the value matches the regex for a valid email
-                      else if (!RegExp(
-                        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                      ).hasMatch(value.trim())) {
-                        return 'Enter a valid email';
-                      }
-                      return null;
-                    },
-                  ),
-                  // Password TextField with validation
-                  CustomTextField(
-                    controller: passwordController,
-                    labelText: "Password",
-                    hintText: "Enter Password",
-                    prefixIcon: Icons.lock,
-                    obscureText: _obscureText,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureText ? Icons.visibility_off : Icons.visibility,
-                        color: Colors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureText = !_obscureText;
-                        });
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  children: [
+                    CommonTextFormField(
+                      controller: emailController,
+                      labelText: "Email Address",
+                      hintText: "Enter Email",
+                      prefixIcon: const Icon(Icons.email),
+                      obscureText: false,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Email is required';
+                        } else if (!RegExp(
+                          r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                        ).hasMatch(value.trim())) {
+                          return 'Enter a valid email';
+                        }
+                        return null;
                       },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Password is required';
-                      } else if (value.length < 6) {
-                        return 'Password must be at least 6 characters long';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
+                    const SizedBox(height: 15),
+                    CommonTextFormField(
+                      controller: passwordController,
+                      labelText: "Password",
+                      hintText: "Enter Password",
+                      obscureText: _obscureText,
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Password is required';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
             Padding(
@@ -128,41 +130,21 @@ class _SigninScreenState extends State<SigninScreen> {
               ),
             ),
             const SizedBox(height: 35),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                  backgroundColor: const Color.fromARGB(255, 17, 144, 248),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                onPressed: () {
-                  // Validate the form before proceeding
-                  if (_formKey.currentState!.validate()) {
-                    // All fields are valid, proceed to HomeScreen
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeScreen(),
-                      ),
-                    );
-                  } else {
-                    // If the form is invalid, show a message or do something
-                    print('Form is not valid');
-                  }
-                },
-                child: const Text(
-                  "Login",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+
+            CustomButton(
+              text: "Login",
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  );
+                } else {
+                  print('Form is not valid');
+                }
+              },
             ),
+
             const SizedBox(height: 100),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -196,60 +178,6 @@ class _SigninScreenState extends State<SigninScreen> {
               ],
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// Reusable TextField Widget
-class CustomTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String labelText;
-  final String hintText;
-  final IconData prefixIcon;
-  final bool obscureText;
-  final Widget? suffixIcon;
-  final String? Function(String?)? validator;
-
-  const CustomTextField({
-    super.key,
-    required this.controller,
-    required this.labelText,
-    required this.hintText,
-    required this.prefixIcon,
-    required this.obscureText,
-    this.suffixIcon,
-    this.validator,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        validator: validator,
-        decoration: InputDecoration(
-          labelText: labelText,
-          hintText: hintText,
-          // floatingLabelBehavior: FloatingLabelBehavior.always,
-          filled: true,
-          fillColor: Colors.white,
-          prefixIcon: Icon(prefixIcon, color: Colors.grey),
-          suffixIcon: suffixIcon,
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(
-              color: Color.fromARGB(255, 39, 98, 146),
-              width: 1.5,
-            ),
-          ),
         ),
       ),
     );

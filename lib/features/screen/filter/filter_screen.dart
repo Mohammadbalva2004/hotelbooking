@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/hoteldetail/hotel_detail_screen.dart';
 import 'dart:math';
 
+import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
+
 class FilterScreen extends StatefulWidget {
   const FilterScreen({super.key});
 
@@ -29,7 +31,20 @@ class _FilterScreenState extends State<FilterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: CommonAppBar(
+        mainTitle: 'Mumbai',
+        leadingIcon: Icons.arrow_back_ios,
+        onLeadingTap: () => Navigator.pop(context),
+        elevation: 2,
+        height: 60,
+        leadingIconColor: Colors.black,
+
+        mainTitleStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+      ),
       body: Column(
         children: [
           const SizedBox(height: 10),
@@ -71,21 +86,6 @@ class _FilterScreenState extends State<FilterScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  AppBar _buildAppBar() {
-    return AppBar(
-      elevation: 0,
-      centerTitle: true,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.black, size: 30),
-        onPressed: () => Navigator.pop(context),
-      ),
-      title: const Text(
-        "Mumbai",
-        style: TextStyle(color: Colors.black, fontSize: 20),
       ),
     );
   }

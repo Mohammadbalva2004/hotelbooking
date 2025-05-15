@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/auth/newpassword/New_password_screen.dart';
+import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
+import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
@@ -47,7 +49,13 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: CommonAppBar(
+        leadingIcon: Icons.arrow_back_ios,
+        onLeadingTap: () => Navigator.pop(context),
+        elevation: 2,
+        height: 60,
+        leadingIconColor: Colors.black,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -58,17 +66,6 @@ class _OtpScreenState extends State<OtpScreen> {
             _buildVerifyButton(context),
           ],
         ),
-      ),
-    );
-  }
-
-  AppBar _buildAppBar() {
-    return AppBar(
-      elevation: 0,
-      centerTitle: true,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.black, size: 30),
-        onPressed: () => Navigator.pop(context),
       ),
     );
   }
@@ -174,41 +171,22 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   Widget _buildVerifyButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          minimumSize: const Size.fromHeight(50),
-          backgroundColor: const Color.fromARGB(255, 17, 144, 248),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-        onPressed: () {
-          // Validate OTP before navigation
-          final otp = _otpControllers.map((c) => c.text).join();
-          if (otp.length == 4) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const NewPasswordScreen(),
-              ),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Please enter complete OTP")),
-            );
-          }
-        },
-        child: const Text(
-          "Verify",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
+    return CustomButton(
+      text: "Verify",
+      onPressed: () {
+        // Validate OTP before navigation
+        final otp = _otpControllers.map((c) => c.text).join();
+        if (otp.length == 4) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NewPasswordScreen()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Please enter complete OTP")),
+          );
+        }
+      },
     );
   }
 }

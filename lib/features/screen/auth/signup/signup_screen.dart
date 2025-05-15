@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/auth/signin/signin_screen.dart';
+import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
+import 'package:hotelbooking/features/widgets/commantextfromfild/Common_Text_FormField.dart';
 import 'package:intl/intl.dart';
 
 void main() {
@@ -40,51 +42,6 @@ class _SignupScreenState extends State<SignupScreen> {
         dateController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
-  }
-
-  Widget customTextFormField({
-    required TextEditingController controller,
-    required String labelText,
-    required String hintText,
-    IconData? prefixIcon,
-    Widget? suffixIcon,
-    bool readOnly = false,
-    VoidCallback? onTap,
-    TextInputType keyboardType = TextInputType.text,
-    bool obscureText = false,
-    String? Function(String?)? validator,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: TextFormField(
-        controller: controller,
-        readOnly: readOnly,
-        onTap: onTap,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        validator: validator,
-        decoration: InputDecoration(
-          labelText: labelText,
-          hintText: hintText,
-          filled: true,
-          fillColor: Colors.white,
-          prefixIcon:
-              prefixIcon != null ? Icon(prefixIcon, color: Colors.grey) : null,
-          suffixIcon: suffixIcon,
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: const Color.fromARGB(255, 39, 98, 146),
-              width: 1.5,
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   Widget genderSelection() {
@@ -173,92 +130,109 @@ class _SignupScreenState extends State<SignupScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  customTextFormField(
-                    controller: nameController,
-                    labelText: "Name",
-                    hintText: "Enter Name",
-                    prefixIcon: Icons.person,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Name is required';
-                      } else if (value.length < 3) {
-                        return 'Name must be at least 3 characters';
-                      }
-                      return null;
-                    },
-                  ),
-                  customTextFormField(
-                    controller: emailController,
-                    labelText: "Email Address",
-                    hintText: "Enter Email",
-                    prefixIcon: Icons.email,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Email is required';
-                      } else if (!RegExp(
-                        r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
-                      ).hasMatch(value)) {
-                        return 'Enter a valid email';
-                      }
-                      return null;
-                    },
-                  ),
-                  customTextFormField(
-                    controller: passwordController,
-                    labelText: "Password",
-                    hintText: "Enter Password",
-                    prefixIcon: Icons.lock,
-                    obscureText: _obscureText,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureText ? Icons.visibility_off : Icons.visibility,
-                        color: Colors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureText = !_obscureText;
-                        });
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CommonTextFormField(
+                      controller: nameController,
+                      labelText: "Name",
+                      hintText: "Enter Name",
+                      prefixIcon: Icon(Icons.person),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Name is required';
+                        } else if (value.length < 3) {
+                          return 'Name must be at least 3 characters';
+                        }
+                        return null;
                       },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Password is required';
-                      } else if (value.length < 6) {
-                        return 'Password must be at least 6 characters long';
-                      }
-                      return null;
-                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CommonTextFormField(
+                      controller: emailController,
+                      labelText: "Email Address",
+                      hintText: "Enter Email",
+                      prefixIcon: Icon(Icons.email),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Email is required';
+                        } else if (!RegExp(
+                          r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        ).hasMatch(value)) {
+                          return 'Enter a valid email';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CommonTextFormField(
+                      controller: passwordController,
+                      labelText: "Password",
+                      hintText: "Enter Password",
+                      prefixIcon: Icon(Icons.lock),
+                      obscureText: _obscureText,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Password is required';
+                        } else if (value.length < 6) {
+                          return 'Password must be at least 6 characters long';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
 
-                  customTextFormField(
-                    controller: phoneController,
-                    labelText: "Mobile Number",
-                    hintText: "Enter Mobile Number",
-                    prefixIcon: Icons.phone,
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Phone number is required';
-                      } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                        return 'Enter a valid 10-digit number';
-                      }
-                      return null;
-                    },
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CommonTextFormField(
+                      controller: phoneController,
+                      labelText: "Mobile Number",
+                      hintText: "Enter Mobile Number",
+                      prefixIcon: Icon(Icons.phone),
+                      keyboardType: TextInputType.phone,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Phone number is required';
+                        } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                          return 'Enter a valid 10-digit number';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
-                  customTextFormField(
-                    controller: dateController,
-                    labelText: "Date Of Birth",
-                    hintText: "Enter Date of Birth",
-                    prefixIcon: Icons.calendar_today,
-                    readOnly: true,
-                    onTap: () => _selectDate(context),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Date of birth is required';
-                      }
-                      return null;
-                    },
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CommonTextFormField(
+                      controller: dateController,
+                      labelText: "Date Of Birth",
+                      hintText: "Enter Date of Birth",
+                      prefixIcon: Icon(Icons.calendar_today),
+                      readOnly: true,
+                      onTap: () => _selectDate(context),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Date of birth is required';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                   // add more fields or gender selection here if needed
                 ],
@@ -268,16 +242,15 @@ class _SignupScreenState extends State<SignupScreen> {
             genderSelection(),
             SizedBox(height: 20),
 
-            GestureDetector(
-              onTap: () {
+            CustomButton(
+              text: "Register",
+              onPressed: () {
                 if (_formKey.currentState!.validate()) {
-                  // ✅ Form is valid — navigate
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => SigninScreen()),
                   );
                 } else {
-                  // ❌ Invalid — show error
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Please fix the errors in the form'),
@@ -285,27 +258,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   );
                 }
               },
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20.0, right: 20),
-                child: Container(
-                  height: 50,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: const Color.fromARGB(255, 17, 144, 248),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Register",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             ),
 
             SizedBox(height: 30),

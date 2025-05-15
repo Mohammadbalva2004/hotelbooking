@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/auth/signin/signin_screen.dart';
+import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
+import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
+import 'package:hotelbooking/features/widgets/commantextfromfild/Common_Text_FormField.dart';
 
 class NewPasswordScreen extends StatefulWidget {
   const NewPasswordScreen({super.key});
@@ -17,27 +20,23 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: CommonAppBar(
+        leadingIcon: Icons.arrow_back_ios,
+        onLeadingTap: () => Navigator.pop(context),
+        elevation: 2,
+        height: 60,
+        leadingIconColor: Colors.black,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             _buildHeader(),
             _buildPasswordImage(),
             _buildPasswordForm(),
+            SizedBox(height: 20),
             _buildSaveButton(context),
           ],
         ),
-      ),
-    );
-  }
-
-  AppBar _buildAppBar() {
-    return AppBar(
-      elevation: 0,
-      centerTitle: true,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.black, size: 30),
-        onPressed: () => Navigator.pop(context),
       ),
     );
   }
@@ -76,87 +75,70 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
   Widget _buildPasswordForm() {
     return Column(
       children: [
-        _buildPasswordField(
-          controller: passwordController,
-          label: "New Password",
-          hint: "Enter New Password",
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: CommonTextFormField(
+            controller: passwordController,
+            labelText: "New Password",
+            hintText: "Enter New Password",
+            obscureText: _obscureText,
+            prefixIcon: const Icon(Icons.lock),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscureText ? Icons.visibility_off : Icons.visibility,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Password is required';
+              }
+              return null;
+            },
+          ),
         ),
         const SizedBox(height: 10),
-        _buildPasswordField(
-          controller: confirmPasswordController,
-          label: "New Confirm Password",
-          hint: "Enter Confirm New Password",
+
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: CommonTextFormField(
+            controller: passwordController,
+            labelText: "New Confirm Password",
+            hintText: "Enter Confirm New Password",
+            obscureText: _obscureText,
+            prefixIcon: const Icon(Icons.lock),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscureText ? Icons.visibility_off : Icons.visibility,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Password is required';
+              }
+              return null;
+            },
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildPasswordField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: TextFormField(
-        keyboardType: TextInputType.text,
-        controller: controller,
-        obscureText: _obscureText,
-        decoration: InputDecoration(
-          hintText: hint,
-          labelText: label,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          filled: true,
-          fillColor: Colors.white,
-          suffixIcon: IconButton(
-            icon: Icon(
-              _obscureText ? Icons.visibility_off : Icons.visibility,
-              color: Colors.grey,
-            ),
-            onPressed: () {
-              setState(() {
-                _obscureText = !_obscureText;
-              });
-            },
-          ),
-          prefixIcon: const Icon(Icons.lock, color: Colors.grey),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(
-              color: Color.fromARGB(255, 39, 98, 146),
-              width: 1.5,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildSaveButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          minimumSize: const Size.fromHeight(50),
-          backgroundColor: const Color.fromARGB(255, 17, 144, 248),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-        onPressed: () => _showSuccessDialog(context),
-        child: const Text(
-          "Save",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
+    return CustomButton(
+      text: "Save",
+      onPressed: () => _showSuccessDialog(context),
     );
   }
 
@@ -208,26 +190,14 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
   }
 
   Widget _buildBackToLoginButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 17, 144, 248),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const SigninScreen()),
-          );
-        },
-        child: const Text(
-          "Back to Login",
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
+    return CustomButton(
+      text: "Back to Login",
+      onPressed: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const SigninScreen()),
+        );
+      },
     );
   }
 }

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hotelbooking/features/screen/auth/signin/signin_screen.dart';
 import 'package:hotelbooking/features/screen/booking/booking_screen.dart';
 import 'package:hotelbooking/features/screen/home/home_screen.dart';
 import 'package:hotelbooking/features/screen/policy/policy_screen.dart';
 import 'package:hotelbooking/features/screen/profileedit/profile_edit_screen.dart';
 import 'package:hotelbooking/features/screen/termcondition/term_condition_screen.dart';
 import 'package:hotelbooking/features/widgets/commanbottomnavbar/common_bottom_nav_bar.dart';
+import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
+import 'package:hotelbooking/features/widgets/commanprofilebutton/comman_profile_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -26,43 +29,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         MaterialPageRoute(builder: (_) => const BookingScreen()),
       );
     }
-  }
-
-  Widget _buildProfileOption({
-    required IconData icon,
-    required String title,
-    Widget? trailing,
-    VoidCallback? onTap,
-    bool showDivider = true,
-  }) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
-          child: InkWell(
-            onTap: onTap,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(icon, size: 30),
-                    const SizedBox(width: 10),
-                    Text(title, style: const TextStyle(fontSize: 20)),
-                  ],
-                ),
-                trailing ?? const Icon(Icons.arrow_forward_ios, size: 30),
-              ],
-            ),
-          ),
-        ),
-        if (showDivider)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: Divider(color: Colors.grey, thickness: 1),
-          ),
-      ],
-    );
   }
 
   @override
@@ -155,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildProfileOption(
+            ProfileOptionTile(
               icon: Icons.edit,
               title: 'Edit Profile',
               onTap: () {
@@ -167,18 +133,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
             ),
-            _buildProfileOption(icon: Icons.lock, title: 'Change Password'),
-            _buildProfileOption(icon: Icons.payment, title: 'Payment Method'),
-            _buildProfileOption(
-              icon: Icons.calendar_today,
-              title: 'My Bookings',
-            ),
-            _buildProfileOption(
+            ProfileOptionTile(icon: Icons.lock, title: 'Change Password'),
+            ProfileOptionTile(icon: Icons.payment, title: 'Payment Method'),
+            ProfileOptionTile(icon: Icons.calendar_today, title: 'My Bookings'),
+            ProfileOptionTile(
               icon: Icons.edit,
               title: 'Dark Mode',
               trailing: Switch(value: false, onChanged: (bool value) {}),
             ),
-            _buildProfileOption(
+            ProfileOptionTile(
               icon: Icons.security,
               title: 'Privacy Policy',
               onTap: () {
@@ -188,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
             ),
-            _buildProfileOption(
+            ProfileOptionTile(
               icon: Icons.description,
               title: 'Terms & Conditions',
               onTap: () {
@@ -201,28 +164,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               showDivider: false,
             ),
+
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(
+            //     horizontal: 20.0,
+            //     vertical: 30,
+            //   ),
+            //   child: SizedBox(
+            //     height: 50,
+            //     width: double.infinity,
+            //     child: ElevatedButton.icon(
+            //       style: ElevatedButton.styleFrom(
+            //         backgroundColor: const Color(0xFF1190F8),
+            //         shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(10),
+            //         ),
+            //       ),
+            //       onPressed: () {},
+            //       icon: const Icon(Icons.logout, color: Colors.white),
+            //       label: const Text(
+            //         'Logout',
+            //         style: TextStyle(color: Colors.white, fontSize: 19),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 20.0,
                 vertical: 30,
               ),
-              child: SizedBox(
-                height: 50,
+              child: CustomButton(
+                text: "Logout",
                 width: double.infinity,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1190F8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: () {},
-                  icon: const Icon(Icons.logout, color: Colors.white),
-                  label: const Text(
-                    'Logout',
-                    style: TextStyle(color: Colors.white, fontSize: 19),
-                  ),
+                prefixIcon: const Icon(
+                  Icons.logout,
+                  color: Colors.white,
+                  size: 24,
                 ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SigninScreen(),
+                    ),
+                  );
+                },
               ),
             ),
           ],

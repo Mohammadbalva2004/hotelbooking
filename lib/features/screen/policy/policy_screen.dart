@@ -87,6 +87,7 @@
 //   }
 // }
 import 'package:flutter/material.dart';
+import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
 
 class PolicyContentWidget extends StatelessWidget {
   const PolicyContentWidget({super.key});
@@ -161,16 +162,18 @@ class _PolicyScreenState extends State<PolicyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black, size: 30),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          "Privacy Policy",
-          style: TextStyle(color: Colors.black, fontSize: 20),
+      appBar: CommonAppBar(
+        mainTitle: 'privacy Policy',
+        leadingIcon: Icons.arrow_back_ios,
+        onLeadingTap: () => Navigator.pop(context),
+        elevation: 2,
+        height: 60,
+        leadingIconColor: Colors.black,
+
+        mainTitleStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
         ),
       ),
       body: const SingleChildScrollView(child: PolicyContentWidget()),

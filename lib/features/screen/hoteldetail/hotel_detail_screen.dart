@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/payment/payment_screen.dart';
 import 'package:hotelbooking/features/screen/review/review_screen.dart';
+import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
 
 class HotelDetailScreen extends StatefulWidget {
   const HotelDetailScreen({super.key});
@@ -331,26 +332,31 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                   ],
                 ),
               ),
-              ElevatedButton(
+              // ElevatedButton(
+              //   onPressed: _showDatePicker,
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: const Color(0xFF1190F8),
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     padding: const EdgeInsets.symmetric(
+              //       horizontal: 20,
+              //       vertical: 15,
+              //     ),
+              //   ),
+              //   child: const Text(
+              //     "Select Date",
+              //     style: TextStyle(
+              //       fontSize: 18,
+              //       fontWeight: FontWeight.bold,
+              //       color: Colors.white,
+              //     ),
+              //   ),
+              // ),
+              CustomButton(
+                text: "Select Date",
                 onPressed: _showDatePicker,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1190F8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 15,
-                  ),
-                ),
-                child: const Text(
-                  "Select Date",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                width: 170,
               ),
             ],
           ),
@@ -385,23 +391,14 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                       setState(() => selectedDate = date);
                     },
                   ),
-                  ElevatedButton(
+
+                  CustomButton(
+                    text: "Select Guest",
                     onPressed: () {
                       Navigator.pop(context);
                       _showGuestSelector();
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1190F8),
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    child: const Text(
-                      "Select Guest",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                    width: double.infinity,
                   ),
                 ],
               ),
@@ -467,7 +464,9 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
-                  ElevatedButton(
+
+                  CustomButton(
+                    text: "Next",
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -476,18 +475,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                         ),
                       );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1190F8),
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    child: const Text(
-                      "Next",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                    width: double.infinity,
                   ),
                 ],
               ),
