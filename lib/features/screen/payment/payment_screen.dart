@@ -3,6 +3,7 @@ import 'package:hotelbooking/features/screen/home/home_screen.dart';
 import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
 import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
 import 'package:hotelbooking/features/widgets/commantextfromfild/Common_Text_FormField.dart';
+import 'package:hotelbooking/features/widgets/commonbottomsheet/Common_BottomSheet.dart';
 
 void main() {
   runApp(const MaterialApp(home: PaymentScreen()));
@@ -109,6 +110,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               value: "\$320.00",
               isTotal: true,
             ),
+
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: CustomButton(
@@ -116,86 +118,78 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 width: double.infinity,
                 height: 50,
                 onPressed: () {
-                  showModalBottomSheet(
+                  showCommonBottomSheet(
                     context: context,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
+                    child: StatefulBuilder(
+                      builder: (context, setState) {
+                        return Container(
+                          height: 385,
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                "assets/icon/submit.jpg",
+                                height: 150,
+                                width: 150,
+                              ),
+                              const Text(
+                                "Payment Received ",
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const Text(
+                                "Successfully",
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "Congratulation",
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                  Image.asset(
+                                    "assets/icon/party.png",
+                                    height: 30,
+                                    width: 30,
+                                  ),
+                                ],
+                              ),
+                              const Text(
+                                "Your booking has been confirmed",
+                                style: TextStyle(fontSize: 17),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 10,
+                                  right: 10,
+                                  top: 20,
+                                ),
+                                child: CustomButton(
+                                  text: "Back To Home",
+                                  width: double.infinity,
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => const HomeScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                    backgroundColor: Colors.white,
-                    builder: (context) {
-                      return StatefulBuilder(
-                        builder: (context, setState) {
-                          return Container(
-                            height: 385,
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              children: [
-                                Image.asset(
-                                  "assets/icon/submit.jpg",
-                                  height: 150,
-                                  width: 150,
-                                ),
-                                const Text(
-                                  "Payment Received ",
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const Text(
-                                  "Successfully",
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      "Congratulation",
-                                      style: TextStyle(fontSize: 17),
-                                    ),
-                                    Image.asset(
-                                      "assets/icon/party.png",
-                                      height: 30,
-                                      width: 30,
-                                    ),
-                                  ],
-                                ),
-                                const Text(
-                                  "Your booking has been confirmed",
-                                  style: TextStyle(fontSize: 17),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 10,
-                                    right: 10,
-                                    top: 20,
-                                  ),
-                                  child: CustomButton(
-                                    text: "Back To Home",
-                                    width: double.infinity,
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder:
-                                              (context) => const HomeScreen(),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
                   );
                 },
               ),
@@ -339,190 +333,168 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
             ],
           ),
+
           GestureDetector(
             onTap: () {
-              showModalBottomSheet(
+              showCommonBottomSheet(
                 context: context,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                ),
-                backgroundColor: Colors.white,
-                builder: (context) {
-                  return StatefulBuilder(
-                    builder: (context, setState) {
-                      return Container(
-                        height: 385,
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Add New Card",
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                              ),
+                child: StatefulBuilder(
+                  builder: (context, setState) {
+                    return Container(
+                      height: 385,
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Add New Card",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
                             ),
-
-                            Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      spreadRadius: 0.2,
-                                      blurRadius: 6,
-                                      offset: const Offset(0, 1),
-                                    ),
-                                  ],
-                                ),
-                                child: CommonTextFormField(
-                                  controller: cardNumberController,
-                                  labelText: 'Card Number',
-                                  labelStyle: const TextStyle(
-                                    color: Color.fromARGB(255, 17, 144, 248),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                  ),
-                                  // prefixIcon: const Icon(Icons.credit_card),
-                                  keyboardType: TextInputType.number,
-                                ),
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white, // Light grey background
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      spreadRadius: 0.2,
-                                      blurRadius: 6,
-                                      offset: const Offset(0, 1),
-                                    ),
-                                  ],
-                                ),
-                                child: CommonTextFormField(
-                                  controller: cardHolderController,
-                                  labelText: 'Card Holder Name',
-                                  labelStyle: const TextStyle(
-                                    color: Color.fromARGB(255, 17, 144, 248),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                  ),
-                                  // prefixIcon: const Icon(Icons.credit_card),
-                                  keyboardType: TextInputType.text,
-                                ),
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color:
-                                            Colors
-                                                .white, // Light grey background
-                                        borderRadius: BorderRadius.circular(10),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(
-                                              0.2,
-                                            ),
-                                            spreadRadius: 0.2,
-                                            blurRadius: 6,
-                                            offset: const Offset(0, 1),
-                                          ),
-                                        ],
-                                      ),
-                                      child: CommonTextFormField(
-                                        controller: expiryDateController,
-                                        labelText: 'Expiry Date',
-                                        labelStyle: const TextStyle(
-                                          color: Color.fromARGB(
-                                            255,
-                                            17,
-                                            144,
-                                            248,
-                                          ),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                        ),
-                                        // prefixIcon: const Icon(Icons.credit_card),
-                                        keyboardType: TextInputType.datetime,
-                                      ),
-                                    ),
-                                  ),
-
-                                  SizedBox(width: 15),
-
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color:
-                                            Colors
-                                                .white, // Light grey background
-                                        borderRadius: BorderRadius.circular(10),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(
-                                              0.2,
-                                            ),
-                                            spreadRadius: 0.2,
-                                            blurRadius: 6,
-                                            offset: const Offset(0, 1),
-                                          ),
-                                        ],
-                                      ),
-                                      child: CommonTextFormField(
-                                        controller: cvvController,
-                                        labelText: 'CVV',
-                                        labelStyle: const TextStyle(
-                                          color: Color.fromARGB(
-                                            255,
-                                            17,
-                                            144,
-                                            248,
-                                          ),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                        ),
-                                        // prefixIcon: const Icon(Icons.credit_card),
-                                        keyboardType: TextInputType.number,
-                                      ),
-                                    ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    spreadRadius: 0.2,
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 1),
                                   ),
                                 ],
                               ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 10,
-                                right: 10,
-                                top: 20,
-                              ),
-                              child: CustomButton(
-                                text: "Add Card",
-                                onPressed: () => Navigator.pop(context),
+                              child: CommonTextFormField(
+                                controller: cardNumberController,
+                                labelText: 'Card Number',
+                                labelStyle: const TextStyle(
+                                  color: Color.fromARGB(255, 17, 144, 248),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                                keyboardType: TextInputType.number,
                               ),
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    spreadRadius: 0.2,
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                              child: CommonTextFormField(
+                                controller: cardHolderController,
+                                labelText: 'Card Holder Name',
+                                labelStyle: const TextStyle(
+                                  color: Color.fromARGB(255, 17, 144, 248),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                                keyboardType: TextInputType.text,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          spreadRadius: 0.2,
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 1),
+                                        ),
+                                      ],
+                                    ),
+                                    child: CommonTextFormField(
+                                      controller: expiryDateController,
+                                      labelText: 'Expiry Date',
+                                      labelStyle: const TextStyle(
+                                        color: Color.fromARGB(
+                                          255,
+                                          17,
+                                          144,
+                                          248,
+                                        ),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                      keyboardType: TextInputType.datetime,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 15),
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          spreadRadius: 0.2,
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 1),
+                                        ),
+                                      ],
+                                    ),
+                                    child: CommonTextFormField(
+                                      controller: cvvController,
+                                      labelText: 'CVV',
+                                      labelStyle: const TextStyle(
+                                        color: Color.fromARGB(
+                                          255,
+                                          17,
+                                          144,
+                                          248,
+                                        ),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 10,
+                              right: 10,
+                              top: 20,
+                            ),
+                            child: CustomButton(
+                              text: "Add Card",
+                              width: double.infinity,
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               );
             },
             child: Container(

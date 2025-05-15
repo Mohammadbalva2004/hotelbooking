@@ -244,6 +244,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
             CustomButton(
               text: "Register",
+              width: double.infinity,
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   Navigator.push(

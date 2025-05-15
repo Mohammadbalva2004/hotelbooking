@@ -138,6 +138,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
   Widget _buildSaveButton(BuildContext context) {
     return CustomButton(
       text: "Save",
+      width: double.infinity,
       onPressed: () => _showSuccessDialog(context),
     );
   }
@@ -192,6 +193,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
   Widget _buildBackToLoginButton(BuildContext context) {
     return CustomButton(
       text: "Back to Login",
+      width: double.infinity,
       onPressed: () {
         Navigator.pushReplacement(
           context,

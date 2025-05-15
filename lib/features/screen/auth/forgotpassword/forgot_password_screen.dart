@@ -119,6 +119,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget _buildContinueButton(BuildContext context) {
     return CustomButton(
       text: "Continue",
+      width: double.infinity,
       onPressed: () {
         {
           Navigator.push(

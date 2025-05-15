@@ -173,6 +173,7 @@ class _OtpScreenState extends State<OtpScreen> {
   Widget _buildVerifyButton(BuildContext context) {
     return CustomButton(
       text: "Verify",
+      width: double.infinity,
       onPressed: () {
         // Validate OTP before navigation
         final otp = _otpControllers.map((c) => c.text).join();

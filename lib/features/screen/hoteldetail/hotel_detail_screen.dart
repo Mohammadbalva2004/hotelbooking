@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/payment/payment_screen.dart';
 import 'package:hotelbooking/features/screen/review/review_screen.dart';
 import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
+import 'package:hotelbooking/features/widgets/commonbottomsheet/Common_BottomSheet.dart';
 
 class HotelDetailScreen extends StatefulWidget {
   const HotelDetailScreen({super.key});
@@ -255,10 +256,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
           title: "Free cancellation until 2:00 PM on 8 May",
           description: "",
         ),
-        // const Padding(
-        //   padding: EdgeInsets.symmetric(horizontal: 20.0),
-        //   child: Divider(color: Colors.grey, thickness: 1),
-        // ),
       ],
     );
   }
@@ -332,30 +329,10 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                   ],
                 ),
               ),
-              // ElevatedButton(
-              //   onPressed: _showDatePicker,
-              //   style: ElevatedButton.styleFrom(
-              //     backgroundColor: const Color(0xFF1190F8),
-              //     shape: RoundedRectangleBorder(
-              //       borderRadius: BorderRadius.circular(10),
-              //     ),
-              //     padding: const EdgeInsets.symmetric(
-              //       horizontal: 20,
-              //       vertical: 15,
-              //     ),
-              //   ),
-              //   child: const Text(
-              //     "Select Date",
-              //     style: TextStyle(
-              //       fontSize: 18,
-              //       fontWeight: FontWeight.bold,
-              //       color: Colors.white,
-              //     ),
-              //   ),
-              // ),
+
               CustomButton(
                 text: "Select Date",
-                onPressed: _showDatePicker,
+                onPressed: () => _showDatePicker(context), // pass context
                 width: 170,
               ),
             ],
@@ -365,124 +342,105 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
     );
   }
 
-  void _showDatePicker() {
-    showModalBottomSheet(
+  void _showDatePicker(BuildContext context) {
+    showCommonBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      child: StatefulBuilder(
+        builder: (context, setState) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Select Date",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                CalendarDatePicker(
+                  initialDate: selectedDate ?? DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(const Duration(days: 365)),
+                  onDateChanged: (date) {
+                    setState(() => selectedDate = date);
+                  },
+                ),
+                const SizedBox(height: 16),
+                CustomButton(
+                  text: "Select Guest",
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showGuestSelector(context);
+                  },
+                  width: double.infinity,
+                ),
+              ],
+            ),
+          );
+        },
       ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Select Date",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  CalendarDatePicker(
-                    initialDate: selectedDate ?? DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 365)),
-                    onDateChanged: (date) {
-                      setState(() => selectedDate = date);
-                    },
-                  ),
-
-                  CustomButton(
-                    text: "Select Guest",
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _showGuestSelector();
-                    },
-                    width: double.infinity,
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
     );
   }
 
-  void _showGuestSelector() {
-    showModalBottomSheet(
+  void _showGuestSelector(BuildContext context) {
+    showCommonBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      child: StatefulBuilder(
+        builder: (context, setState) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Select Guest",
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                _buildGuestCounter(
+                  title: "Adults",
+                  subtitle: "Ages 14 or above",
+                  count: adultCount,
+                  onIncrement: () => setState(() => adultCount++),
+                  onDecrement: () {
+                    if (adultCount > 1) setState(() => adultCount--);
+                  },
+                ),
+                const Divider(),
+                _buildGuestCounter(
+                  title: "Children",
+                  subtitle: "Ages 2–13",
+                  count: childrenCount,
+                  onIncrement: () => setState(() => childrenCount++),
+                  onDecrement: () {
+                    if (childrenCount > 0) setState(() => childrenCount--);
+                  },
+                ),
+                const Divider(),
+                _buildGuestCounter(
+                  title: "Infants",
+                  subtitle: "Under 2",
+                  count: infantsCount,
+                  onIncrement: () => setState(() => infantsCount++),
+                  onDecrement: () {
+                    if (infantsCount > 0) setState(() => infantsCount--);
+                  },
+                ),
+                const SizedBox(height: 20),
+                CustomButton(
+                  text: "Next",
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PaymentScreen()),
+                    );
+                  },
+                  width: double.infinity,
+                ),
+              ],
+            ),
+          );
+        },
       ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Select Guest",
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildGuestCounter(
-                    title: "Adults",
-                    subtitle: "Ages 14 or above",
-                    count: adultCount,
-                    onIncrement: () => setState(() => adultCount++),
-                    onDecrement: () {
-                      if (adultCount > 1) {
-                        setState(() => adultCount--);
-                      }
-                    },
-                  ),
-                  const Divider(),
-                  _buildGuestCounter(
-                    title: "Children",
-                    subtitle: "Ages 2-13",
-                    count: childrenCount,
-                    onIncrement: () => setState(() => childrenCount++),
-                    onDecrement: () {
-                      if (childrenCount > 0) {
-                        setState(() => childrenCount--);
-                      }
-                    },
-                  ),
-                  const Divider(),
-                  _buildGuestCounter(
-                    title: "Infants",
-                    subtitle: "Under 2",
-                    count: infantsCount,
-                    onIncrement: () => setState(() => infantsCount++),
-                    onDecrement: () {
-                      if (infantsCount > 0) {
-                        setState(() => infantsCount--);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 20),
-
-                  CustomButton(
-                    text: "Next",
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PaymentScreen(),
-                        ),
-                      );
-                    },
-                    width: double.infinity,
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
     );
   }
 

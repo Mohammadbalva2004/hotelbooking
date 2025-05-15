@@ -3,6 +3,7 @@ import 'package:hotelbooking/features/screen/hoteldetail/hotel_detail_screen.dar
 import 'dart:math';
 
 import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
+import 'package:hotelbooking/features/widgets/commonbottomsheet/Common_BottomSheet.dart';
 
 class FilterScreen extends StatefulWidget {
   const FilterScreen({super.key});
@@ -98,17 +99,18 @@ class _FilterScreenState extends State<FilterScreen> {
           _buildFilterButton(
             label: "Sort",
             icon: Icons.sort,
-            onTap: _showSortOptions,
+            onTap: () => _showSortOptions(context),
           ),
+
           _buildFilterButton(
             label: "Locality",
             icon: Icons.arrow_drop_down,
-            onTap: _showLocalityFilter,
+            onTap: () => _showLocalityFilter(context),
           ),
           _buildFilterButton(
             label: "Price",
             icon: Icons.arrow_drop_down,
-            onTap: _showPriceFilter,
+            onTap: () => _showPriceFilter(context),
           ),
           _buildFilterButton(
             label: "Categories",
@@ -281,71 +283,73 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
-  void _showSortOptions() {
-    showModalBottomSheet(
+  void _showSortOptions(BuildContext context) {
+    showCommonBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      child: StatefulBuilder(
+        builder: (context, setState) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Sort by',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                _buildSortOption(
+                  context: context,
+                  icon: Icons.trending_up_outlined,
+                  label: 'Popularity',
+                  index: 0,
+                  currentIndex: _selectedOption,
+                  onTap: () => setState(() => _selectedOption = 0),
+                ),
+                _buildSortOption(
+                  context: context,
+                  icon: Icons.location_on_outlined,
+                  label: 'Near by location',
+                  index: 1,
+                  currentIndex: _selectedOption,
+                  onTap: () => setState(() => _selectedOption = 1),
+                ),
+                _buildSortOption(
+                  context: context,
+                  icon: Icons.star_border,
+                  label: 'Guest rating',
+                  index: 2,
+                  currentIndex: _selectedOption,
+                  onTap: () => setState(() => _selectedOption = 2),
+                ),
+                _buildSortOption(
+                  context: context,
+                  icon: Icons.attach_money,
+                  label: 'Price - low to high',
+                  index: 3,
+                  currentIndex: _selectedOption,
+                  onTap: () => setState(() => _selectedOption = 3),
+                ),
+                _buildSortOption(
+                  context: context,
+                  icon: Icons.attach_money,
+                  label: 'Price - high to low',
+                  index: 4,
+                  currentIndex: _selectedOption,
+                  onTap: () => setState(() => _selectedOption = 4),
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          );
+        },
       ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Container(
-              height: 350,
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Sort by',
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                  _buildSortOption(
-                    icon: Icons.trending_up_outlined,
-                    label: 'Popularity',
-                    index: 0,
-                    currentIndex: _selectedOption,
-                    onTap: () => setState(() => _selectedOption = 0),
-                  ),
-                  _buildSortOption(
-                    icon: Icons.location_on_outlined,
-                    label: 'Near by location',
-                    index: 1,
-                    currentIndex: _selectedOption,
-                    onTap: () => setState(() => _selectedOption = 1),
-                  ),
-                  _buildSortOption(
-                    icon: Icons.star_border,
-                    label: 'Guest rating',
-                    index: 2,
-                    currentIndex: _selectedOption,
-                    onTap: () => setState(() => _selectedOption = 2),
-                  ),
-                  _buildSortOption(
-                    icon: Icons.attach_money,
-                    label: 'Price - low to high',
-                    index: 3,
-                    currentIndex: _selectedOption,
-                    onTap: () => setState(() => _selectedOption = 3),
-                  ),
-                  _buildSortOption(
-                    icon: Icons.attach_money,
-                    label: 'Price - high to low',
-                    index: 4,
-                    currentIndex: _selectedOption,
-                    onTap: () => setState(() => _selectedOption = 4),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
     );
   }
 
   Widget _buildSortOption({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required int index,
@@ -357,224 +361,78 @@ class _FilterScreenState extends State<FilterScreen> {
         onTap();
         Navigator.pop(context);
       },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: Colors.black, size: 30.0),
-              const SizedBox(width: 10),
-              Text(label, style: const TextStyle(fontSize: 20)),
-            ],
-          ),
-          if (currentIndex == index)
-            Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.blue, width: 2.0),
-              ),
-              child: const Icon(Icons.check, color: Colors.blue),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: Colors.black, size: 30.0),
+                const SizedBox(width: 10),
+                Text(label, style: const TextStyle(fontSize: 20)),
+              ],
             ),
-        ],
-      ),
-    );
-  }
-
-  void _showLocalityFilter() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Container(
-              height: 400,
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Locality",
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: localities.length,
-                      itemBuilder: (context, index) {
-                        return CheckboxListTile(
-                          value: localitySelections[index],
-                          onChanged: (bool? value) {
-                            setState(() => localitySelections[index] = value!);
-                          },
-                          title: Text(
-                            localities[index],
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                          controlAffinity: ListTileControlAffinity.leading,
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50),
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                localitySelections = List.filled(
-                                  localities.length,
-                                  false,
-                                );
-                              });
-                            },
-                            child: const Text(
-                              "Clear All",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50),
-                              backgroundColor: const Color(0xFF1190F8),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              "Apply",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+            if (currentIndex == index)
+              Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.blue, width: 2.0),
+                ),
+                child: const Icon(Icons.check, color: Colors.blue, size: 20),
               ),
-            );
-          },
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 
-  void _showPriceFilter() {
-    showModalBottomSheet(
+  void _showLocalityFilter(BuildContext context) {
+    showCommonBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      isScrollControlled: true,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            final priceDistribution = [120, 80, 40]; // Sample data for chart
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.7,
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Price Range',
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  ...priceRanges.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final range = entry.value;
-                    return ListTile(
-                      title: Text(range, style: const TextStyle(fontSize: 20)),
-                      subtitle: Text(
-                        '${priceDistribution[index]} options',
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      leading: Radio<String>(
-                        value: range,
-                        groupValue: selectedPriceRange,
-                        onChanged: (String? value) {
-                          setState(() => selectedPriceRange = value!);
+      child: StatefulBuilder(
+        builder: (context, setState) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // Adjust height based on content
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Locality",
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 300),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: localities.length,
+                    itemBuilder: (context, index) {
+                      return CheckboxListTile(
+                        value: localitySelections[index],
+                        onChanged: (bool? value) {
+                          setState(() => localitySelections[index] = value!);
                         },
-                      ),
-                    );
-                  }).toList(),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Price Distribution',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                        title: Text(
+                          localities[index],
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                      );
+                    },
                   ),
-                  const SizedBox(height: 10),
-                  Container(
-                    height: 150,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children:
-                          priceRanges.asMap().entries.map((entry) {
-                            final index = entry.key;
-                            final range = entry.value;
-                            final heightFactor =
-                                priceDistribution[index] /
-                                priceDistribution.reduce(max);
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 105 * heightFactor,
-                                  decoration: BoxDecoration(
-                                    color:
-                                        selectedPriceRange == range
-                                            ? Colors.blue
-                                            : Colors.grey[300],
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(range.split(' - ')[0]),
-                              ],
-                            );
-                          }).toList(),
-                    ),
-                  ),
-                  const Spacer(),
-                  Row(
-                    children: [
-                      Expanded(
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size.fromHeight(50),
@@ -584,10 +442,15 @@ class _FilterScreenState extends State<FilterScreen> {
                             ),
                           ),
                           onPressed: () {
-                            setState(() => selectedPriceRange = priceRanges[0]);
+                            setState(() {
+                              localitySelections = List.filled(
+                                localities.length,
+                                false,
+                              );
+                            });
                           },
                           child: const Text(
-                            "Reset",
+                            "Clear All",
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -596,17 +459,21 @@ class _FilterScreenState extends State<FilterScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size.fromHeight(50),
-                            backgroundColor: const Color(0xFF1190F8),
+                            backgroundColor: Color(0xFF1190F8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
                           child: const Text(
                             "Apply",
                             style: TextStyle(
@@ -617,14 +484,145 @@ class _FilterScreenState extends State<FilterScreen> {
                           ),
                         ),
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showPriceFilter(BuildContext context) {
+    showCommonBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, setState) {
+          final priceDistribution = [120, 80, 40]; // Sample data
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Price Range',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                ...priceRanges.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final range = entry.value;
+                  return ListTile(
+                    title: Text(range, style: const TextStyle(fontSize: 20)),
+                    subtitle: Text(
+                      '${priceDistribution[index]} options',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    leading: Radio<String>(
+                      value: range,
+                      groupValue: selectedPriceRange,
+                      onChanged: (String? value) {
+                        setState(() => selectedPriceRange = value!);
+                      },
+                    ),
+                  );
+                }).toList(),
+                const SizedBox(height: 20),
+                const Text(
+                  'Price Distribution',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  height: 150,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children:
+                        priceRanges.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final range = entry.value;
+                          final heightFactor =
+                              priceDistribution[index] /
+                              priceDistribution.reduce(max);
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 105 * heightFactor,
+                                decoration: BoxDecoration(
+                                  color:
+                                      selectedPriceRange == range
+                                          ? Colors.blue
+                                          : Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(range.split(' - ')[0]),
+                            ],
+                          );
+                        }).toList(),
                   ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(50),
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() => selectedPriceRange = priceRanges[0]);
+                        },
+                        child: const Text(
+                          "Reset",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(50),
+                          backgroundColor: Color(0xFF1190F8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          "Apply",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

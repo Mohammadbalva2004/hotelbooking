@@ -133,6 +133,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
             CustomButton(
               text: "Login",
+              width: double.infinity,
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   Navigator.push(

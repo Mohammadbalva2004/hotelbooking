@@ -5,6 +5,7 @@ import 'package:hotelbooking/features/screen/filter/filter_screen.dart';
 import 'package:hotelbooking/features/screen/hoteldetail/hotel_detail_screen.dart';
 import 'package:hotelbooking/features/screen/profile/profile_screen.dart';
 import 'package:hotelbooking/features/widgets/commanbottomnavbar/common_bottom_nav_bar.dart';
+import 'package:hotelbooking/features/widgets/commanhotelcard/comman_hotel_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -314,126 +315,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHotelCard(Map<String, dynamic> hotel) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Container(
-        height: 300,
-        width: 250,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HotelDetailScreen(),
-                        ),
-                      );
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        hotel['image']!,
-                        height: 150,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: 20,
-                  top: 20,
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white.withOpacity(0.2),
-                    ),
-                    child: const Icon(
-                      Icons.favorite_border,
-                      color: Colors.white,
-                      size: 30,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 4,
-              ),
-              child: StarRating(
-                rating: hotel['rating']!,
-                reviewCount: hotel['reviews']!,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 4,
-              ),
-              child: Text(
-                hotel['name']!,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 12.0),
-              child: Row(
-                children: [
-                  const Icon(Icons.location_on_outlined, color: Colors.black),
-                  const SizedBox(width: 8),
-                  Text(
-                    hotel['location']!,
-                    style: const TextStyle(fontSize: 15, color: Colors.grey),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 12.0, top: 4),
-              child: Row(
-                children: [
-                  Text(
-                    "\$${hotel['price']}",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Text(
-                    "/night",
-                    style: TextStyle(fontSize: 20, color: Colors.black),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+    return CommonHotelCard(
+      image: hotel['image']!,
+      name: hotel['name']!,
+      rating: hotel['rating']!,
+      reviewCount: hotel['reviews']!,
+      location: hotel['location']!,
+      price: hotel['price']!,
+      cardType: CardType.vertical,
+      onTap:
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const HotelDetailScreen()),
+          ),
     );
   }
 
@@ -472,156 +366,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildNearbyHotelItem(Map<String, dynamic> hotel) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Container(
-        height: 150,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      hotel['image']!,
-                      height: 130,
-                      width: 120,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-
-                  Positioned(
-                    right: 10,
-                    top: 10,
-                    child: Container(
-                      height: 30,
-                      width: 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white.withOpacity(0.2),
-                      ),
-                      child: const Icon(
-                        Icons.favorite_border,
-                        color: Colors.white,
-                        size: 25,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 15.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  StarRating(
-                    rating: hotel['rating']!,
-                    reviewCount: hotel['reviews']!,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12.0,
-                      vertical: 4,
-                    ),
-                    child: Text(
-                      hotel['name']!,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on_outlined,
-                        color: Colors.black,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        hotel['location']!,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "\$${hotel['price']}",
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Text(
-                        "/night",
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class StarRating extends StatelessWidget {
-  final double rating;
-  final int reviewCount;
-
-  const StarRating({
-    super.key,
-    required this.rating,
-    required this.reviewCount,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    int fullStars = rating.floor();
-    bool hasHalfStar = rating - fullStars >= 0.5;
-
-    return Row(
-      children: [
-        ...List.generate(
-          fullStars,
-          (index) => const Icon(Icons.star, color: Colors.amber, size: 20),
-        ),
-        if (hasHalfStar)
-          const Icon(Icons.star_half, color: Colors.amber, size: 20),
-        ...List.generate(
-          5 - fullStars - (hasHalfStar ? 1 : 0),
-          (index) =>
-              const Icon(Icons.star_border, color: Colors.amber, size: 20),
-        ),
-        const SizedBox(width: 5),
-        Text(
-          "($reviewCount reviews)",
-          style: const TextStyle(fontSize: 14, color: Colors.black),
-        ),
-      ],
+    return CommonHotelCard(
+      image: hotel['image']!,
+      name: hotel['name']!,
+      rating: hotel['rating']!,
+      reviewCount: hotel['reviews']!,
+      location: hotel['location']!,
+      price: hotel['price']!,
+      cardType: CardType.horizontal,
     );
   }
 }
