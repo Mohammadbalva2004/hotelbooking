@@ -4,8 +4,8 @@ import 'package:hotelbooking/features/screen/filter/filter_screen.dart';
 
 import 'package:hotelbooking/features/screen/hoteldetail/hotel_detail_screen.dart';
 import 'package:hotelbooking/features/screen/profile/profile_screen.dart';
-import 'package:hotelbooking/features/widgets/commanbottomnavbar/common_bottom_nav_bar.dart';
-import 'package:hotelbooking/features/widgets/commanhotelcard/comman_hotel_card.dart';
+import 'package:hotelbooking/features/widgets/commonbottomnavbar/common_bottom_nav_bar.dart';
+import 'package:hotelbooking/features/widgets/commonhotelcard/common_hotel_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

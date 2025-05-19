@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/hoteldetail/hotel_detail_screen.dart';
 import 'dart:math';
 
-import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
+import 'package:hotelbooking/features/widgets/commonappbar/custom_app_bar.dart';
 import 'package:hotelbooking/features/widgets/commonbottomsheet/Common_BottomSheet.dart';
 
 class FilterScreen extends StatefulWidget {

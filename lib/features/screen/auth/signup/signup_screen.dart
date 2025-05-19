@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/auth/signin/signin_screen.dart';
-import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
-import 'package:hotelbooking/features/widgets/commantextfromfild/Common_Text_FormField.dart';
+import 'package:hotelbooking/features/widgets/commonbutton/common_buttom.dart';
+import 'package:hotelbooking/features/widgets/commontextfromfild/Common_Text_FormField.dart';
 import 'package:intl/intl.dart';
 
 void main() {

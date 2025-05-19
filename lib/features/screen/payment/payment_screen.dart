@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/home/home_screen.dart';
-import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
-import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
-import 'package:hotelbooking/features/widgets/commantextfromfild/Common_Text_FormField.dart';
+import 'package:hotelbooking/features/widgets/commonappbar/custom_app_bar.dart';
+import 'package:hotelbooking/features/widgets/commonbutton/common_buttom.dart';
+import 'package:hotelbooking/features/widgets/commontextfromfild/Common_Text_FormField.dart';
 import 'package:hotelbooking/features/widgets/commonbottomsheet/Common_BottomSheet.dart';
 
 void main() {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
+import 'package:hotelbooking/features/widgets/commonappbar/custom_app_bar.dart';
 
 class TermConditionWidget extends StatelessWidget {
   const TermConditionWidget({super.key});

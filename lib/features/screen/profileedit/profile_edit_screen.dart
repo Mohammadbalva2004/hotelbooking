@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/profile/profile_screen.dart';
-import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
-import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
+import 'package:hotelbooking/features/widgets/commonappbar/custom_app_bar.dart';
+import 'package:hotelbooking/features/widgets/commonbutton/common_buttom.dart';
 import 'package:intl/intl.dart';
 
 class ProfileEditScreen extends StatefulWidget {

@@ -5,9 +5,9 @@ import 'package:hotelbooking/features/screen/home/home_screen.dart';
 import 'package:hotelbooking/features/screen/policy/policy_screen.dart';
 import 'package:hotelbooking/features/screen/profileedit/profile_edit_screen.dart';
 import 'package:hotelbooking/features/screen/termcondition/term_condition_screen.dart';
-import 'package:hotelbooking/features/widgets/commanbottomnavbar/common_bottom_nav_bar.dart';
-import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
-import 'package:hotelbooking/features/widgets/commanprofilebutton/comman_profile_button.dart';
+import 'package:hotelbooking/features/widgets/commonbottomnavbar/common_bottom_nav_bar.dart';
+import 'package:hotelbooking/features/widgets/commonbutton/common_buttom.dart';
+import 'package:hotelbooking/features/widgets/commonprofilebutton/comman_profile_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/home/home_screen.dart';
 import 'package:hotelbooking/features/screen/profile/profile_screen.dart';
-import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
-import 'package:hotelbooking/features/widgets/commanbottomnavbar/common_bottom_nav_bar.dart';
-import 'package:hotelbooking/features/widgets/commanhotelcard/comman_hotel_card.dart';
+import 'package:hotelbooking/features/widgets/commonappbar/custom_app_bar.dart';
+import 'package:hotelbooking/features/widgets/commonbottomnavbar/common_bottom_nav_bar.dart';
+import 'package:hotelbooking/features/widgets/commonhotelcard/common_hotel_card.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});

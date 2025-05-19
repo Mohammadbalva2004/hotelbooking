@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/payment/payment_screen.dart';
 import 'package:hotelbooking/features/screen/review/review_screen.dart';
-import 'package:hotelbooking/features/widgets/commanbutton/comman_buttom.dart';
+import 'package:hotelbooking/features/widgets/commonbutton/common_buttom.dart';
 import 'package:hotelbooking/features/widgets/commonbottomsheet/Common_BottomSheet.dart';
 
 class HotelDetailScreen extends StatefulWidget {
