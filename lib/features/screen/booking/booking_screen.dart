@@ -3,6 +3,7 @@ import 'package:hotelbooking/features/screen/home/home_screen.dart';
 import 'package:hotelbooking/features/screen/profile/profile_screen.dart';
 import 'package:hotelbooking/features/widgets/commanappbar/custom_app_bar.dart';
 import 'package:hotelbooking/features/widgets/commanbottomnavbar/common_bottom_nav_bar.dart';
+import 'package:hotelbooking/features/widgets/commanhotelcard/comman_hotel_card.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});
@@ -38,7 +39,6 @@ class _BookingScreenState extends State<BookingScreen> {
         elevation: 2,
         height: 60,
         leadingIconColor: Colors.black,
-
         mainTitleStyle: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
@@ -131,41 +131,41 @@ class BookingList extends StatelessWidget {
             ? [
               BookingItem(
                 id: "22378965",
-                date: "April 26,2023,10:00 PM - 03:00 PM",
+                date: "April 26, 2023, 10:00 PM - 03:00 PM",
                 image: "assets/images/room1.png",
                 rating: 5,
                 reviewCount: 120,
                 title: "Malon Greens",
-                location: "Mumbai,Maharashtra",
+                location: "Mumbai, Maharashtra",
               ),
               BookingItem(
                 id: "90867891",
-                date: "April 30,2023,10:00 PM - 03:00 PM",
+                date: "April 30, 2023, 10:00 PM - 03:00 PM",
                 image: "assets/images/room3.png",
                 rating: 4.5,
                 reviewCount: 210,
                 title: "Sabro Prime",
-                location: "Goa,Maharashtra",
+                location: "Goa, Maharashtra",
               ),
             ]
             : [
               BookingItem(
                 id: "22378965",
-                date: "April 26,2023,10:00 PM - 03:00 PM",
+                date: "April 20, 2023, 10:00 PM - 03:00 PM",
                 image: "assets/images/room1.png",
                 rating: 5,
                 reviewCount: 120,
                 title: "Malon Greens",
-                location: "Mumbai,Maharashtra",
+                location: "Mumbai, Maharashtra",
               ),
               BookingItem(
                 id: "90867891",
-                date: "April 30,2023,10:00 PM - 03:00 PM",
+                date: "April 15, 2023, 10:00 PM - 03:00 PM",
                 image: "assets/images/room2.png",
                 rating: 4,
                 reviewCount: 95,
                 title: "Paradise Mint",
-                location: "Jaipur,Rajasthan",
+                location: "Jaipur, Rajasthan",
               ),
             ];
 
@@ -222,62 +222,13 @@ class BookingCard extends StatelessWidget {
               style: const TextStyle(fontSize: 15, color: Colors.grey),
             ),
           ),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    booking.image,
-                    height: 100,
-                    width: 90,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  StarRating(
-                    rating: booking.rating,
-                    reviewCount: booking.reviewCount,
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12.0,
-                      vertical: 4,
-                    ),
-                    child: Text(
-                      booking.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on_outlined,
-                        color: Colors.black,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        booking.location,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+          CommonHotelCard(
+            image: booking.image,
+            name: booking.title,
+            rating: booking.rating,
+            reviewCount: booking.reviewCount,
+            location: booking.location,
+            cardType: CardType.compact,
           ),
           Padding(
             padding: const EdgeInsets.only(left: 10.0, right: 10, top: 5),
@@ -349,42 +300,4 @@ class BookingItem {
     required this.title,
     required this.location,
   });
-}
-
-class StarRating extends StatelessWidget {
-  final double rating;
-  final int reviewCount;
-
-  const StarRating({
-    super.key,
-    required this.rating,
-    required this.reviewCount,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    int fullStars = rating.floor();
-    bool hasHalfStar = rating - fullStars >= 0.5;
-
-    return Row(
-      children: [
-        ...List.generate(
-          fullStars,
-          (index) => const Icon(Icons.star, color: Colors.amber, size: 20),
-        ),
-        if (hasHalfStar)
-          const Icon(Icons.star_half, color: Colors.amber, size: 20),
-        ...List.generate(
-          5 - fullStars - (hasHalfStar ? 1 : 0),
-          (index) =>
-              const Icon(Icons.star_border, color: Colors.amber, size: 20),
-        ),
-        const SizedBox(width: 5),
-        Text(
-          "($reviewCount reviews)",
-          style: const TextStyle(fontSize: 14, color: Colors.black),
-        ),
-      ],
-    );
-  }
 }
