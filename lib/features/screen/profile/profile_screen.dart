@@ -4,10 +4,12 @@ import 'package:hotelbooking/features/screen/booking/booking_screen.dart';
 import 'package:hotelbooking/features/screen/home/home_screen.dart';
 import 'package:hotelbooking/features/screen/policy/policy_screen.dart';
 import 'package:hotelbooking/features/screen/profileedit/profile_edit_screen.dart';
+import 'package:hotelbooking/features/screen/splash/splash_screen.dart';
 import 'package:hotelbooking/features/screen/termcondition/term_condition_screen.dart';
 import 'package:hotelbooking/features/widgets/commonbottomnavbar/common_bottom_nav_bar.dart';
 import 'package:hotelbooking/features/widgets/commonbutton/common_buttom.dart';
 import 'package:hotelbooking/features/widgets/commonprofilebutton/comman_profile_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -202,7 +204,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: Colors.white,
                   size: 24,
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  var sharedPref = await SharedPreferences.getInstance();
+
+                  sharedPref.remove(SplashScreenState.KEYLOGIN);
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
