@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/auth/forgotpassword/forgot_password_screen.dart';
 import 'package:hotelbooking/features/screen/auth/signup/signup_screen.dart';
@@ -20,6 +21,85 @@ class _SigninScreenState extends State<SigninScreen> {
   bool _obscureText = true;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  var email = "";
+  var password = "";
+
+  Future<void> userLogin() async {
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+
+      if (!mounted) return;
+
+      // Save login state
+      final sharedPref = await SharedPreferences.getInstance();
+      await sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
+
+      // Navigate to HomeScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.green,
+          content: Text(
+            "Login Successful!",
+            style: TextStyle(fontSize: 18, color: Colors.white),
+          ),
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      String message;
+
+      switch (e.code) {
+        case 'user-not-found':
+          message = "No user found for that email.";
+          break;
+        case 'wrong-password':
+          message = "Wrong password provided.";
+          break;
+        case 'invalid-email':
+          message = "The email address is not valid.";
+          break;
+        case 'user-disabled':
+          message = "This user has been disabled.";
+          break;
+        case 'invalid-credential':
+          message = "Invalid email/password combination.";
+          break;
+        default:
+          message = "Login failed: ${e.message}";
+      }
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            message,
+            style: const TextStyle(fontSize: 16, color: Colors.white),
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            "An unexpected error occurred: $e",
+            style: const TextStyle(fontSize: 16, color: Colors.white),
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,12 +144,10 @@ class _SigninScreenState extends State<SigninScreen> {
                       prefixIcon: const Icon(Icons.email),
                       obscureText: false,
                       validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Email is required';
-                        } else if (!RegExp(
-                          r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                        ).hasMatch(value.trim())) {
-                          return 'Enter a valid email';
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        } else if (!value.contains('@')) {
+                          return 'Please enter a valid email';
                         }
                         return null;
                       },
@@ -137,18 +215,18 @@ class _SigninScreenState extends State<SigninScreen> {
               width: double.infinity,
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  var sharedPref = await SharedPreferences.getInstance();
-                  sharedPref.setBool(
-                    SplashScreenState.KEYLOGIN,
-                    true,
-                  ); // <-- This will now work
+                  setState(() {
+                    email = emailController.text.trim();
+                    password = passwordController.text;
+                  });
 
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
+                  await userLogin(); // ✅ Await this function
                 } else {
-                  print('Form is not valid');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please fix the errors in the form'),
+                    ),
+                  );
                 }
               },
             ),

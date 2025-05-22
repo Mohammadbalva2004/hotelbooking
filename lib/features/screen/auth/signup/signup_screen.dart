@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/features/screen/auth/signin/signin_screen.dart';
+import 'package:hotelbooking/features/screen/home/home_screen.dart';
 import 'package:hotelbooking/features/widgets/commonbutton/common_buttom.dart';
 import 'package:hotelbooking/features/widgets/commontextfromfild/Common_Text_FormField.dart';
 import 'package:intl/intl.dart';
@@ -29,6 +32,63 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _obscureText = true;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  var email = "";
+  var password = "";
+
+  Future<bool> registration() async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green,
+          content: Text(
+            "Registered Successfully. Please Login..",
+            style: TextStyle(fontSize: 20, color: Colors.white),
+          ),
+        ),
+      );
+
+      return true; // ✅ success
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text(
+              "Password must be at least 6 characters long ",
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+          ),
+        );
+      } else if (e.code == 'email-already-in-use') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text(
+              "Account already exists",
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(
+              "Registration failed: ${e.message}",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        );
+      }
+      return false; // ❌ failed
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -188,14 +248,14 @@ class _SignupScreenState extends State<SignupScreen> {
                           });
                         },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Password is required';
-                        } else if (value.length < 6) {
-                          return 'Password must be at least 6 characters long';
-                        }
-                        return null;
-                      },
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return 'Password is required';
+                      //   } else if (value.length < 6) {
+                      //     return 'Password must be at least 6 characters long';
+                      //   }
+                      //   return null;
+                      // },
                     ),
                   ),
 
@@ -245,12 +305,21 @@ class _SignupScreenState extends State<SignupScreen> {
             CustomButton(
               text: "Register",
               width: double.infinity,
-              onPressed: () {
+              onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SigninScreen()),
-                  );
+                  setState(() {
+                    email = emailController.text;
+                    password = passwordController.text;
+                  });
+
+                  bool success = await registration(); // ⏳ Wait for result
+
+                  if (success) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SigninScreen()),
+                    );
+                  }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
