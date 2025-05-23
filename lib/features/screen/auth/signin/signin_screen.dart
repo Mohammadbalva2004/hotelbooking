@@ -27,24 +27,19 @@ class _SigninScreenState extends State<SigninScreen> {
 
   Future<void> userLogin() async {
     try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email.trim(),
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
         password: password,
       );
 
-      if (!mounted) return;
-
-      // Save login state
       final sharedPref = await SharedPreferences.getInstance();
       await sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
 
-      // Navigate to HomeScreen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
 
-      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: Colors.green,
@@ -55,47 +50,35 @@ class _SigninScreenState extends State<SigninScreen> {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      String message;
-
+      String errorMsg;
       switch (e.code) {
         case 'user-not-found':
-          message = "No user found for that email.";
+          errorMsg = "No user found for that email.";
           break;
         case 'wrong-password':
-          message = "Wrong password provided.";
+          errorMsg = "Wrong password provided.";
           break;
         case 'invalid-email':
-          message = "The email address is not valid.";
-          break;
-        case 'user-disabled':
-          message = "This user has been disabled.";
+          errorMsg = "The email address is badly formatted.";
           break;
         case 'invalid-credential':
-          message = "Invalid email/password combination.";
+          errorMsg = "Invalid credentials. Check email and password.";
+          break;
+        case 'user-disabled':
+          errorMsg = "This user has been disabled.";
           break;
         default:
-          message = "Login failed: ${e.message}";
+          errorMsg = "Login failed: ${e.message}";
       }
 
-      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
-            message,
-            style: const TextStyle(fontSize: 16, color: Colors.white),
-          ),
-        ),
+        SnackBar(backgroundColor: Colors.red, content: Text(errorMsg)),
       );
     } catch (e) {
-      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.red,
-          content: Text(
-            "An unexpected error occurred: $e",
-            style: const TextStyle(fontSize: 16, color: Colors.white),
-          ),
+          content: Text("Unexpected error: $e"),
         ),
       );
     }
@@ -146,12 +129,17 @@ class _SigninScreenState extends State<SigninScreen> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your email';
-                        } else if (!value.contains('@')) {
-                          return 'Please enter a valid email';
+                        }
+                        final emailRegex = RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        );
+                        if (!emailRegex.hasMatch(value.trim())) {
+                          return 'Enter a valid email';
                         }
                         return null;
                       },
                     ),
+
                     const SizedBox(height: 15),
                     CommonTextFormField(
                       controller: passwordController,
@@ -173,8 +161,8 @@ class _SigninScreenState extends State<SigninScreen> {
                         },
                       ),
                       validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Password is required';
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
                         }
                         return null;
                       },
@@ -216,11 +204,13 @@ class _SigninScreenState extends State<SigninScreen> {
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   setState(() {
-                    email = emailController.text.trim();
+                    email =
+                        emailController.text
+                            .trim(); // ✅ Keep trim to avoid spaces
                     password = passwordController.text;
                   });
 
-                  await userLogin(); // ✅ Await this function
+                  await userLogin();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(

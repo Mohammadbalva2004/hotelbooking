@@ -43,6 +43,8 @@ class _SignupScreenState extends State<SignupScreen> {
         password: password,
       );
 
+      await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.green,
