@@ -32,8 +32,8 @@ class _SigninScreenState extends State<SigninScreen> {
         password: password,
       );
 
-      final sharedPref = await SharedPreferences.getInstance();
-      await sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
+      // final sharedPref = await SharedPreferences.getInstance();
+      // await sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
 
       Navigator.pushReplacement(
         context,

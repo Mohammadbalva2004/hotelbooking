@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hotelbooking/features/screen/auth/signin/signin_screen.dart';
 import 'package:hotelbooking/features/screen/booking/booking_screen.dart';
 import 'package:hotelbooking/features/screen/home/home_screen.dart';
@@ -9,7 +10,6 @@ import 'package:hotelbooking/features/screen/termcondition/term_condition_screen
 import 'package:hotelbooking/features/widgets/commonbottomnavbar/common_bottom_nav_bar.dart';
 import 'package:hotelbooking/features/widgets/commonbutton/common_buttom.dart';
 import 'package:hotelbooking/features/widgets/commonprofilebutton/comman_profile_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -166,31 +166,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               showDivider: false,
             ),
-
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(
-            //     horizontal: 20.0,
-            //     vertical: 30,
-            //   ),
-            //   child: SizedBox(
-            //     height: 50,
-            //     width: double.infinity,
-            //     child: ElevatedButton.icon(
-            //       style: ElevatedButton.styleFrom(
-            //         backgroundColor: const Color(0xFF1190F8),
-            //         shape: RoundedRectangleBorder(
-            //           borderRadius: BorderRadius.circular(10),
-            //         ),
-            //       ),
-            //       onPressed: () {},
-            //       icon: const Icon(Icons.logout, color: Colors.white),
-            //       label: const Text(
-            //         'Logout',
-            //         style: TextStyle(color: Colors.white, fontSize: 19),
-            //       ),
-            //     ),
-            //   ),
-            // ),
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 20.0,
@@ -205,15 +180,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   size: 24,
                 ),
                 onPressed: () async {
-                  var sharedPref = await SharedPreferences.getInstance();
+                  await FirebaseAuth.instance.signOut();
 
-                  sharedPref.remove(SplashScreenState.KEYLOGIN);
-
-                  Navigator.push(
+                  Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const SigninScreen(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const SigninScreen()),
+                    (route) => false,
                   );
                 },
               ),
