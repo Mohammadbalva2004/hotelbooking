@@ -41,48 +41,47 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyD_7hEnz7B2EGzLi5IvojRUoxpIxlo1_tY',
-    appId: '1:761660855727:web:4b5b3f233d19799c178b5a',
-    messagingSenderId: '761660855727',
-    projectId: 'hotelbooking-d44fa',
-    authDomain: 'hotelbooking-d44fa.firebaseapp.com',
-    storageBucket: 'hotelbooking-d44fa.firebasestorage.app',
-    measurementId: 'G-1JQ5RXD17X',
+    apiKey: 'AIzaSyB1mnuHhBeT9priZc-ne1YgVOAlkSZXiW0',
+    appId: '1:377534975030:web:5a16466742020f24a35c97',
+    messagingSenderId: '377534975030',
+    projectId: 'hotelbook-demo',
+    authDomain: 'hotelbook-demo.firebaseapp.com',
+    storageBucket: 'hotelbook-demo.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAIKjfA0Y9UJpxI9_5JqjJnByRqwt08GIg',
-    appId: '1:761660855727:android:41e6d3bd6de5efde178b5a',
-    messagingSenderId: '761660855727',
-    projectId: 'hotelbooking-d44fa',
-    storageBucket: 'hotelbooking-d44fa.firebasestorage.app',
+    apiKey: 'AIzaSyDYD8QlhdDQXFLy1ZKDSnGV9vrx-pHrVUY',
+    appId: '1:377534975030:android:079f65ba6761b859a35c97',
+    messagingSenderId: '377534975030',
+    projectId: 'hotelbook-demo',
+    storageBucket: 'hotelbook-demo.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyArYWnFZtPLeMCERnYPSLMJM9zLycolN_4',
-    appId: '1:761660855727:ios:f318fdc984f1c3f4178b5a',
-    messagingSenderId: '761660855727',
-    projectId: 'hotelbooking-d44fa',
-    storageBucket: 'hotelbooking-d44fa.firebasestorage.app',
+    apiKey: 'AIzaSyDKJ5IW8JGV6jCYTpwkRfFAi7fTXwGBiMs',
+    appId: '1:377534975030:ios:107f9035b332b04da35c97',
+    messagingSenderId: '377534975030',
+    projectId: 'hotelbook-demo',
+    storageBucket: 'hotelbook-demo.firebasestorage.app',
     iosBundleId: 'com.example.hotelbooking',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyArYWnFZtPLeMCERnYPSLMJM9zLycolN_4',
-    appId: '1:761660855727:ios:f318fdc984f1c3f4178b5a',
-    messagingSenderId: '761660855727',
-    projectId: 'hotelbooking-d44fa',
-    storageBucket: 'hotelbooking-d44fa.firebasestorage.app',
+    apiKey: 'AIzaSyDKJ5IW8JGV6jCYTpwkRfFAi7fTXwGBiMs',
+    appId: '1:377534975030:ios:107f9035b332b04da35c97',
+    messagingSenderId: '377534975030',
+    projectId: 'hotelbook-demo',
+    storageBucket: 'hotelbook-demo.firebasestorage.app',
     iosBundleId: 'com.example.hotelbooking',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyD_7hEnz7B2EGzLi5IvojRUoxpIxlo1_tY',
-    appId: '1:761660855727:web:b319ebabe26d7094178b5a',
-    messagingSenderId: '761660855727',
-    projectId: 'hotelbooking-d44fa',
-    authDomain: 'hotelbooking-d44fa.firebaseapp.com',
-    storageBucket: 'hotelbooking-d44fa.firebasestorage.app',
-    measurementId: 'G-GV6HMMCC36',
+    apiKey: 'AIzaSyB1mnuHhBeT9priZc-ne1YgVOAlkSZXiW0',
+    appId: '1:377534975030:web:02b9451295c49e86a35c97',
+    messagingSenderId: '377534975030',
+    projectId: 'hotelbook-demo',
+    authDomain: 'hotelbook-demo.firebaseapp.com',
+    storageBucket: 'hotelbook-demo.firebasestorage.app',
   );
+
 }

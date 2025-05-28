@@ -32,8 +32,7 @@ class _SigninScreenState extends State<SigninScreen> {
         password: password,
       );
 
-      // final sharedPref = await SharedPreferences.getInstance();
-      // await sharedPref.setBool(SplashScreenState.KEYLOGIN, true);
+      if (!mounted) return;
 
       Navigator.pushReplacement(
         context,
@@ -50,6 +49,8 @@ class _SigninScreenState extends State<SigninScreen> {
         ),
       );
     } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
       String errorMsg;
       switch (e.code) {
         case 'user-not-found':
@@ -75,6 +76,8 @@ class _SigninScreenState extends State<SigninScreen> {
         SnackBar(backgroundColor: Colors.red, content: Text(errorMsg)),
       );
     } catch (e) {
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.red,
