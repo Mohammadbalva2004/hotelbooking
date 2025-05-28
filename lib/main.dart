@@ -51,7 +51,8 @@ class _SplashScreenState extends State<SplashScreen> {
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
 
-      _saveTokenToFirestore(user);
+      // Save token after navigation
+      await _saveTokenToFirestore(user);
     } else {
       Navigator.pushReplacement(
         context,
@@ -61,20 +62,25 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _saveTokenToFirestore(User user) async {
+    print("Trying to fetch FCM token...");
     try {
       final token = await FirebaseMessaging.instance.getToken();
-      if (token == null) return;
+      print("Fetched token: $token");
+
+      if (token == null) {
+        print("Token was null.");
+        return;
+      }
 
       final userDoc = FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid);
-
       await userDoc.set({
         'fcmToken': token,
         'tokenCreatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
 
-      print("FCM Token saved: $token");
+      print("FCM Token saved to Firestore: $token");
     } catch (e) {
       print("Error saving FCM token: $e");
     }

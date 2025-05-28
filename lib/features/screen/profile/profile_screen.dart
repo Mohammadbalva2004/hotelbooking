@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hotelbooking/features/screen/auth/signin/signin_screen.dart';
@@ -19,6 +20,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String name = '';
+  String email = '';
+  bool isLoading = true;
+
   void _navigateToTab(BuildContext context, int index) {
     if (index == 0) {
       Navigator.pushReplacement(
@@ -34,6 +39,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        DocumentSnapshot userDoc =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .get();
+
+        setState(() {
+          name = userDoc['name'] ?? '';
+          email = userDoc['email'] ?? '';
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
@@ -71,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        width: 90,
+                        width: 70,
                         height: 80,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
@@ -81,24 +116,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Image.asset(
                             "assets/images/profile.jpg",
                             fit: BoxFit.cover,
-                            width: 80,
+                            width: 60,
                             height: 80,
                           ),
                         ),
                       ),
-                      const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Curtis Weaver",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          ),
-                          Text(
-                            "CurtisWeaver@example.com",
-                            style: TextStyle(color: Colors.white, fontSize: 15),
-                          ),
-                        ],
-                      ),
+                      if (!isLoading)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                            Text(
+                              email,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        )
+                      else
+                        const CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
                       Container(
                         height: 50,
                         width: 50,
