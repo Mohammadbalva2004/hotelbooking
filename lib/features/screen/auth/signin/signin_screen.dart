@@ -5,8 +5,6 @@ import 'package:hotelbooking/features/screen/auth/signup/signup_screen.dart';
 import 'package:hotelbooking/features/screen/home/home_screen.dart';
 import 'package:hotelbooking/features/widgets/commonbutton/common_buttom.dart';
 import 'package:hotelbooking/features/widgets/commontextfromfild/Common_Text_FormField.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:hotelbooking/features/screen/splash/splash_screen.dart';
 
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
