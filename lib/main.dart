@@ -51,7 +51,6 @@ class _SplashScreenState extends State<SplashScreen> {
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
 
-      // Save token after navigation
       await _saveTokenToFirestore(user);
     } else {
       Navigator.pushReplacement(
