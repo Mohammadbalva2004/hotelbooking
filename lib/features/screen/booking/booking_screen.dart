@@ -149,7 +149,6 @@ class BookingList extends StatelessWidget {
               .where('userId', isEqualTo: userId)
               .snapshots(),
       builder: (context, snapshot) {
-        // Debug prints
         print('Connection state: ${snapshot.connectionState}');
         print('Has data: ${snapshot.hasData}');
         print('Error: ${snapshot.error}');
@@ -182,7 +181,6 @@ class BookingList extends StatelessWidget {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
-                    // Trigger rebuild
                     (context as Element).markNeedsBuild();
                   },
                   child: const Text('Retry'),
@@ -199,7 +197,6 @@ class BookingList extends StatelessWidget {
 
         print('Document count: ${snapshot.data!.docs.length}');
 
-        // Filter bookings based on upcoming/past
         final allBookings =
             snapshot.data!.docs.map((doc) {
               print('Document ID: ${doc.id}');
@@ -207,15 +204,12 @@ class BookingList extends StatelessWidget {
               return BookingItem.fromFirestore(doc);
             }).toList();
 
-        // Filter bookings based on status and dates
         final filteredBookings =
             allBookings.where((booking) {
               if (isUpcoming) {
-                // Show confirmed and pending bookings
                 return booking.status == 'confirmed' ||
                     booking.status == 'pending';
               } else {
-                // Show completed and cancelled bookings
                 return booking.status == 'completed' ||
                     booking.status == 'cancelled';
               }
@@ -302,7 +296,6 @@ class BookingCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with Booking ID and Status
           Container(
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
@@ -354,7 +347,6 @@ class BookingCard extends StatelessWidget {
             ),
           ),
 
-          // Hotel Information
           Padding(
             padding: const EdgeInsets.all(15),
             child: Row(
@@ -472,7 +464,6 @@ class BookingCard extends StatelessWidget {
             ),
           ),
 
-          // Booking Details
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 15),
             padding: const EdgeInsets.all(15),
@@ -482,7 +473,6 @@ class BookingCard extends StatelessWidget {
             ),
             child: Column(
               children: [
-                // Check-in and Check-out
                 Row(
                   children: [
                     Expanded(
@@ -567,7 +557,6 @@ class BookingCard extends StatelessWidget {
                 const Divider(height: 1),
                 const SizedBox(height: 15),
 
-                // Guest Information
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -591,7 +580,6 @@ class BookingCard extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                // Price Breakdown
                 Column(
                   children: [
                     Row(
@@ -664,7 +652,6 @@ class BookingCard extends StatelessWidget {
             ),
           ),
 
-          // Action Buttons
           Padding(
             padding: const EdgeInsets.all(15),
             child: Row(
@@ -720,7 +707,6 @@ class BookingCard extends StatelessWidget {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      // Handle view details or book again
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
@@ -792,7 +778,6 @@ class BookingCard extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 try {
-                  // Show loading
                   Navigator.of(context).pop();
                   showDialog(
                     context: context,
@@ -807,7 +792,6 @@ class BookingCard extends StatelessWidget {
                       .doc(bookingId)
                       .update({'status': 'cancelled'});
 
-                  // Hide loading
                   Navigator.of(context).pop();
 
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -817,7 +801,6 @@ class BookingCard extends StatelessWidget {
                     ),
                   );
                 } catch (e) {
-                  // Hide loading
                   Navigator.of(context).pop();
 
                   ScaffoldMessenger.of(context).showSnackBar(

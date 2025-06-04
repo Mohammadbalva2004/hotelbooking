@@ -5,7 +5,6 @@ class BookingService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Create a new booking in Firebase
   static Future<String?> createBooking({
     required String hotelId,
     required String hotelName,
@@ -26,13 +25,11 @@ class BookingService {
     required double totalPrice,
   }) async {
     try {
-      // Check if user is logged in
       final user = _auth.currentUser;
       if (user == null) {
         throw Exception('User not authenticated');
       }
 
-      // Create booking data
       final bookingData = {
         'userId': user.uid,
         'hotelId': hotelId,
@@ -56,7 +53,6 @@ class BookingService {
         'createdAt': FieldValue.serverTimestamp(),
       };
 
-      // Add to Firestore
       final docRef = await _firestore.collection('bookings').add(bookingData);
 
       print('Booking created with ID: ${docRef.id}');
@@ -67,7 +63,6 @@ class BookingService {
     }
   }
 
-  // Get a specific booking
   static Future<Map<String, dynamic>?> getBooking(String bookingId) async {
     try {
       final doc = await _firestore.collection('bookings').doc(bookingId).get();
@@ -81,7 +76,6 @@ class BookingService {
     }
   }
 
-  // Cancel a booking
   static Future<bool> cancelBooking(String bookingId) async {
     try {
       await _firestore.collection('bookings').doc(bookingId).update({

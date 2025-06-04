@@ -5,106 +5,100 @@ import 'dart:math';
 import 'package:hotelbooking/features/widgets/commonappbar/custom_app_bar.dart';
 import 'package:hotelbooking/features/widgets/commonbottomsheet/Common_BottomSheet.dart';
 
-class FilterScreen extends StatefulWidget {
-  const FilterScreen({super.key});
+class PuneScreen extends StatefulWidget {
+  const PuneScreen({super.key});
 
   @override
-  State<FilterScreen> createState() => _FilterScreenState();
+  State<PuneScreen> createState() => _PuneScreenState();
 }
 
-class _FilterScreenState extends State<FilterScreen> {
+class _PuneScreenState extends State<PuneScreen> {
   int _selectedOption = -1;
-  String selectedPriceRange = '\$10 - \$100';
+  String selectedPriceRange = '₹1100 - ₹1400';
   final List<String> priceRanges = [
-    '\$10 - \$100',
-    '\$100 - \$500',
-    '\$500 - \$2500',
+    '₹1100 - ₹1400',
+    '₹1400 - ₹1800',
+    '₹1800 - ₹2500',
   ];
   final List<String> localities = [
-    "Andheri East",
-    "Thane",
-    "Bandra",
-    "Dadar",
-    "Navi Mumbai",
+    "Hinjewadi",
+    "Koregaon Park",
+    "Baner",
+    "Wakad",
+    "Kharadi",
   ];
   List<bool> localitySelections = List.filled(5, false);
 
   final List<Map<String, dynamic>> allHotels = [
     {
-      'name': 'Malon Greens',
+      'name': 'Tech Hub Hotel',
       'image': 'assets/images/room1.png',
-      'location': 'Mumbai, Maharashtra',
-      'locality': 'Andheri East',
-      'price': 120,
-      'rating': 5.0,
-      'reviews': 120,
-
-      'popularity': 95,
-    },
-    {
-      'name': 'Sabro Prime',
-      'image': 'assets/images/room2.png',
-      'location': 'Mumbai, Maharashtra',
-      'locality': 'Bandra',
-      'price': 90,
-      'rating': 4.8,
-      'reviews': 110,
-
-      'popularity': 88,
-    },
-    {
-      'name': 'Royal Orchid',
-      'image': 'assets/images/room3.png',
-      'location': 'Mumbai, Maharashtra',
-      'locality': 'Thane',
-      'price': 150,
-      'rating': 4.6,
-      'reviews': 95,
-
-      'popularity': 92,
-    },
-    {
-      'name': 'Sunset Bay',
-      'image': 'assets/images/room1.png',
-      'location': 'Mumbai, Maharashtra',
-      'locality': 'Dadar',
-      'price': 200,
-      'rating': 4.9,
-      'reviews': 150,
-      'popularity': 97,
-    },
-    {
-      'name': 'Green Valley',
-      'image': 'assets/images/room3.png',
-      'location': 'Mumbai, Maharashtra',
-      'locality': 'Navi Mumbai',
-      'price': 85,
-      'rating': 4.3,
-      'reviews': 78,
-
+      'location': 'Pune, Maharashtra',
+      'locality': 'Hinjewadi',
+      'price': 1400,
+      'rating': 4.1,
+      'reviews': 67,
       'popularity': 82,
     },
     {
-      'name': 'Metro Heights',
+      'name': 'IT Park Residency',
       'image': 'assets/images/room2.png',
-      'location': 'Mumbai, Maharashtra',
-      'locality': 'Andheri East',
-      'price': 110,
-      'rating': 4.5,
-      'reviews': 92,
-
-      'popularity': 89,
+      'location': 'Pune, Maharashtra',
+      'locality': 'Wakad',
+      'price': 1100,
+      'rating': 4.0,
+      'reviews': 45,
+      'popularity': 78,
     },
     {
-      'name': 'Luxury Palace',
+      'name': 'Koregaon Suites',
+      'image': 'assets/images/room3.png',
+      'location': 'Pune, Maharashtra',
+      'locality': 'Koregaon Park',
+      'price': 1800,
+      'rating': 4.4,
+      'reviews': 89,
+      'popularity': 88,
+    },
+    {
+      'name': 'Baner Business Hotel',
       'image': 'assets/images/room1.png',
-      'location': 'Mumbai, Maharashtra',
-      'locality': 'Bandra',
-      'price': 250,
-      'rating': 4.7,
-      'reviews': 130,
-
-      'popularity': 94,
+      'location': 'Pune, Maharashtra',
+      'locality': 'Baner',
+      'price': 1600,
+      'rating': 4.2,
+      'reviews': 72,
+      'popularity': 85,
+    },
+    {
+      'name': 'Kharadi Corporate Stay',
+      'image': 'assets/images/room3.png',
+      'location': 'Pune, Maharashtra',
+      'locality': 'Kharadi',
+      'price': 2200,
+      'rating': 4.5,
+      'reviews': 95,
+      'popularity': 90,
+    },
+    {
+      'name': 'Pune Central Hotel',
+      'image': 'assets/images/room2.png',
+      'location': 'Pune, Maharashtra',
+      'locality': 'Koregaon Park',
+      'price': 1350,
+      'rating': 4.1,
+      'reviews': 58,
+      'popularity': 80,
+    },
+    {
+      'name': 'Executive Towers',
+      'image': 'assets/images/room1.png',
+      'location': 'Pune, Maharashtra',
+      'locality': 'Hinjewadi',
+      'price': 2400,
+      'rating': 4.6,
+      'reviews': 112,
+      'popularity': 92,
     },
   ];
 
@@ -113,7 +107,6 @@ class _FilterScreenState extends State<FilterScreen> {
   @override
   void initState() {
     super.initState();
-
     filteredHotels = List.from(allHotels);
   }
 
@@ -142,14 +135,14 @@ class _FilterScreenState extends State<FilterScreen> {
       int minPrice = 0;
       int maxPrice = 3000;
 
-      if (selectedPriceRange == '\$10 - \$100') {
-        minPrice = 10;
-        maxPrice = 100;
-      } else if (selectedPriceRange == '\$100 - \$500') {
-        minPrice = 100;
-        maxPrice = 500;
-      } else if (selectedPriceRange == '\$500 - \$2500') {
-        minPrice = 500;
+      if (selectedPriceRange == '₹1100 - ₹1400') {
+        minPrice = 1100;
+        maxPrice = 1400;
+      } else if (selectedPriceRange == '₹1400 - ₹1800') {
+        minPrice = 1400;
+        maxPrice = 1800;
+      } else if (selectedPriceRange == '₹1800 - ₹2500') {
+        minPrice = 1800;
         maxPrice = 2500;
       }
 
@@ -180,7 +173,7 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        mainTitle: 'Mumbai',
+        mainTitle: 'Pune',
         leadingIcon: Icons.arrow_back_ios,
         onLeadingTap: () => Navigator.pop(context),
         elevation: 2,
@@ -234,6 +227,7 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
+  // Include all the same methods as Mumbai screen with Pune-specific data
   Widget _buildFilterOptionsRow() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -405,7 +399,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 child: Row(
                   children: [
                     Text(
-                      "\$ $price",
+                      " ₹$price",
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -425,6 +419,7 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
+  // Include all bottom sheet methods (same implementation as Mumbai)
   void _showSortOptions(BuildContext context) {
     showCommonBottomSheet(
       context: context,
@@ -658,7 +653,7 @@ class _FilterScreenState extends State<FilterScreen> {
       context: context,
       child: StatefulBuilder(
         builder: (context, setState) {
-          final priceDistribution = [120, 80, 40]; // Sample data
+          final priceDistribution = [100, 85, 65];
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -671,14 +666,9 @@ class _FilterScreenState extends State<FilterScreen> {
                 ),
                 const SizedBox(height: 10),
                 ...priceRanges.asMap().entries.map((entry) {
-                  final index = entry.key;
                   final range = entry.value;
                   return ListTile(
                     title: Text(range, style: const TextStyle(fontSize: 20)),
-                    subtitle: Text(
-                      '${priceDistribution[index]} options',
-                      style: const TextStyle(fontSize: 14),
-                    ),
                     leading: Radio<String>(
                       value: range,
                       groupValue: selectedPriceRange,

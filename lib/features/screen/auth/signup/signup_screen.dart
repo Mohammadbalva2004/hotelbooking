@@ -45,12 +45,12 @@ class _SignupScreenState extends State<SignupScreen> {
         setState(() {
           _imageFile = File(pickedFile.path);
         });
-        print("✅ Image picked: ${pickedFile.path}");
+        print(" Image picked: ${pickedFile.path}");
       } else {
-        print("⚠️ No image selected.");
+        print(" No image selected.");
       }
     } catch (e) {
-      print("❌ Error picking image: $e");
+      print(" Error picking image: $e");
     }
   }
 
@@ -64,10 +64,10 @@ class _SignupScreenState extends State<SignupScreen> {
       final uploadTask = await storageRef.putFile(imageFile);
 
       final downloadUrl = await storageRef.getDownloadURL();
-      print("✅ Image uploaded. URL: $downloadUrl");
+      print(" Image uploaded. URL: $downloadUrl");
       return downloadUrl;
     } catch (e) {
-      print('❌ Error uploading image: $e');
+      print(' Error uploading image: $e');
       return null;
     }
   }

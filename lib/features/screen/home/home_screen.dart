@@ -3,9 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:hotelbooking/features/screen/booking/booking_screen.dart';
-import 'package:hotelbooking/features/screen/filter/filter_screen.dart';
 import 'package:hotelbooking/features/screen/hoteldetail/hotel_detail_screen.dart';
 import 'package:hotelbooking/features/screen/profile/profile_screen.dart';
+import 'package:hotelbooking/features/screen/statehotel/chennai/chennai_screen.dart';
+import 'package:hotelbooking/features/screen/statehotel/goa/goa_screen.dart';
+import 'package:hotelbooking/features/screen/statehotel/jaipur/jaipur_screen.dart';
+import 'package:hotelbooking/features/screen/statehotel/mumbai/mumbai_screen.dart';
+import 'package:hotelbooking/features/screen/statehotel/pune/pune_screen.dart';
 import 'package:hotelbooking/features/widgets/commonbottomnavbar/common_bottom_nav_bar.dart';
 import 'package:hotelbooking/features/widgets/commonhotelcard/common_hotel_card.dart';
 
@@ -22,20 +26,37 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey _bestHotelsKey = GlobalKey();
   final GlobalKey _nearbyHotelsKey = GlobalKey();
 
+  // Search functionality
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  bool _isSearching = false;
+  List<Map<String, dynamic>> _allHotels = [];
+  List<Map<String, dynamic>> _filteredHotels = [];
+
   @override
   void initState() {
     super.initState();
     _initializeFirebaseAndData();
+    _loadAllHotels();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _initializeFirebaseAndData() async {
-    await Firebase.initializeApp();
-    await _checkAndUploadHotelsToFirestore();
+    try {
+      await Firebase.initializeApp();
+      await _checkAndUploadHotelsToFirestore();
+    } catch (e) {
+      print("Error initializing Firebase: $e");
+    }
   }
 
   Future<void> _checkAndUploadHotelsToFirestore() async {
     try {
-      // Check if hotels already exist in Firestore
       final QuerySnapshot existingHotels =
           await FirebaseFirestore.instance
               .collection('hotels')
@@ -43,7 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
               .limit(1)
               .get();
 
-      // If no hotels exist, upload them
       if (existingHotels.docs.isEmpty) {
         await _uploadBestHotelsToFirestore();
       } else {
@@ -57,11 +77,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _uploadBestHotelsToFirestore() async {
     final hotels = [
       {
-        'id': 'malon_greens', // Unique identifier
+        'id': 'malon_greens',
         'name': 'Malon Greens',
         'image': 'assets/images/room1.png',
         'location': 'Mumbai, Maharashtra',
-        'price': 120,
+        'price': 1200,
         'rating': 4.5,
         'reviews': 120,
       },
@@ -70,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'name': 'Paradise Mint',
         'image': 'assets/images/room2.png',
         'location': 'Jaipur, Rajasthan',
-        'price': 180,
+        'price': 1800,
         'rating': 4.5,
         'reviews': 120,
       },
@@ -79,18 +99,16 @@ class _HomeScreenState extends State<HomeScreen> {
         'name': 'Sabro Prime',
         'image': 'assets/images/room3.png',
         'location': 'Goa, Maharashtra',
-        'price': 150,
+        'price': 1500,
         'rating': 4.5,
         'reviews': 120,
       },
     ];
 
     try {
-      // Use batch write for better performance
       WriteBatch batch = FirebaseFirestore.instance.batch();
 
       for (var hotel in hotels) {
-        // Use the hotel ID as document ID to prevent duplicates
         DocumentReference docRef = FirebaseFirestore.instance
             .collection('hotels')
             .doc(hotel['id'] as String);
@@ -103,6 +121,110 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       print("Error uploading hotels to Firestore: $e");
     }
+  }
+
+  // Load all hotels for search functionality
+  void _loadAllHotels() {
+    _allHotels = [
+      {
+        'name': 'Malon Greens',
+        'image': 'assets/images/room1.png',
+        'location': 'Mumbai, Maharashtra',
+        'price': 1200,
+        'rating': 4.5,
+        'reviews': 120,
+      },
+      {
+        'name': 'Paradise Mint',
+        'image': 'assets/images/room2.png',
+        'location': 'Jaipur, Rajasthan',
+        'price': 1800,
+        'rating': 4.5,
+        'reviews': 120,
+      },
+      {
+        'name': 'Sabro Prime',
+        'image': 'assets/images/room3.png',
+        'location': 'Goa, Maharashtra',
+        'price': 1500,
+        'rating': 4.5,
+        'reviews': 120,
+      },
+      {
+        'name': '7 twalve',
+        'image': 'assets/images/room4.png',
+        'location': 'Pune, Maharashtra',
+        'price': 1500,
+        'rating': 4.5,
+        'reviews': 120,
+      },
+      {
+        'name': 'Savor Delight',
+        'image': 'assets/images/photo5.jpeg',
+        'location': 'Chennai, Tamil Nadu',
+        'price': 1500,
+        'rating': 4.5,
+        'reviews': 120,
+      },
+      {
+        'name': 'Royal Orchid',
+        'image': 'assets/images/room3.png',
+        'location': 'Mumbai, Maharashtra',
+        'price': 1800,
+        'rating': 4.6,
+        'reviews': 95,
+      },
+      {
+        'name': 'Ocean View Resort',
+        'image': 'assets/images/room1.png',
+        'location': 'Goa, India',
+        'price': 2500,
+        'rating': 4.7,
+        'reviews': 156,
+      },
+      {
+        'name': 'Marina Bay Hotel',
+        'image': 'assets/images/room2.png',
+        'location': 'Chennai, Tamil Nadu',
+        'price': 1600,
+        'rating': 4.2,
+        'reviews': 75,
+      },
+      {
+        'name': 'Tech Hub Hotel',
+        'image': 'assets/images/room4.png',
+        'location': 'Pune, Maharashtra',
+        'price': 1400,
+        'rating': 4.1,
+        'reviews': 67,
+      },
+    ];
+  }
+
+  // Search hotels by name
+  void _searchHotels(String query) {
+    print("Searching for: $query"); // Debug print
+
+    setState(() {
+      _searchQuery = query;
+
+      if (query.isEmpty) {
+        _isSearching = false;
+        _filteredHotels = [];
+      } else {
+        _isSearching = true;
+        _filteredHotels =
+            _allHotels
+                .where(
+                  (hotel) => hotel['name'].toString().toLowerCase().contains(
+                    query.toLowerCase(),
+                  ),
+                )
+                .toList();
+
+        print("Found ${_filteredHotels.length} hotels"); // Debug print
+      }
+    });
   }
 
   void _navigateToTab(BuildContext context, int index) {
@@ -126,44 +248,93 @@ class _HomeScreenState extends State<HomeScreen> {
         preferredSize: const Size.fromHeight(160),
         child: _buildCustomAppBar(),
       ),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        child: Column(
-          children: [
-            _buildCityList(),
-            const SizedBox(height: 10),
-            KeyedSubtree(
-              key: _bestHotelsKey,
-              child: Column(
-                children: [
-                  _buildSectionHeader(
-                    title: "Best Hotels",
-                    onSeeAll: _scrollToBestHotels,
-                  ),
-                  _buildBestHotelsList(),
-                ],
+      body:
+          _isSearching
+              ? _buildSearchResults()
+              : SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  children: [
+                    _buildCityList(),
+                    const SizedBox(height: 10),
+                    KeyedSubtree(
+                      key: _bestHotelsKey,
+                      child: Column(
+                        children: [
+                          _buildSectionHeader(
+                            title: "Best Hotels",
+                            onSeeAll: _scrollToBestHotels,
+                          ),
+                          _buildBestHotelsList(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    KeyedSubtree(
+                      key: _nearbyHotelsKey,
+                      child: Column(
+                        children: [
+                          _buildSectionHeader(
+                            title: "Nearby your location",
+                            onSeeAll: _scrollToNearbyHotels,
+                          ),
+                          _buildNearbyHotelsList(),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            KeyedSubtree(
-              key: _nearbyHotelsKey,
-              child: Column(
-                children: [
-                  _buildSectionHeader(
-                    title: "Nearby your location",
-                    onSeeAll: _scrollToNearbyHotels,
-                  ),
-                  _buildNearbyHotelsList(),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
       bottomNavigationBar: CommonBottomNavBar(
         currentIndex: 0,
         onTap: (index) => _navigateToTab(context, index),
       ),
+    );
+  }
+
+  // Build search results
+  Widget _buildSearchResults() {
+    if (_filteredHotels.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_off, size: 80, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              'No hotels found for "$_searchQuery"',
+              style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: _filteredHotels.length,
+      itemBuilder: (context, index) {
+        final hotel = _filteredHotels[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: CommonHotelCard(
+            image: hotel['image'] ?? 'assets/images/default.png',
+            name: hotel['name'] ?? 'Unknown Hotel',
+            rating: (hotel['rating'] ?? 0.0).toDouble(),
+            reviewCount: hotel['reviews'] ?? 0,
+            location: hotel['location'] ?? 'Unknown Location',
+            price: hotel['price'] ?? 0,
+            cardType: CardType.horizontal,
+            onTap:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => HotelDetailScreen(hotelData: hotel),
+                  ),
+                ),
+          ),
+        );
+      },
     );
   }
 
@@ -239,13 +410,25 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       children: [
         Expanded(
-          child: TextFormField(
+          child: TextField(
+            controller: _searchController,
+            onChanged: _searchHotels,
             decoration: InputDecoration(
-              hintText: "Search",
+              hintText: "Search hotels by name",
               hintStyle: const TextStyle(color: Colors.white),
               filled: true,
               fillColor: Colors.white.withOpacity(0.1),
               prefixIcon: const Icon(Icons.search, color: Colors.white),
+              suffixIcon:
+                  _searchQuery.isNotEmpty
+                      ? IconButton(
+                        icon: const Icon(Icons.clear, color: Colors.white),
+                        onPressed: () {
+                          _searchController.clear();
+                          _searchHotels('');
+                        },
+                      )
+                      : null,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
                 borderSide: const BorderSide(color: Colors.blue),
@@ -302,10 +485,30 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCityItem(BuildContext context, Map<String, String> city) {
     return GestureDetector(
       onTap: () {
-        if (city['name'] == 'Mumbai') {
+        Widget? destination;
+
+        switch (city['name']) {
+          case 'Mumbai':
+            destination = const MumbaiScreen();
+            break;
+          case 'Goa':
+            destination = const GoaScreen();
+            break;
+          case 'Chennai':
+            destination = const ChennaiScreen();
+            break;
+          case 'Jaipur':
+            destination = const JaipurScreen();
+            break;
+          case 'Pune':
+            destination = const PuneScreen();
+            break;
+        }
+
+        if (destination != null) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => FilterScreen()),
+            MaterialPageRoute(builder: (context) => destination!),
           );
         }
       },
@@ -319,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.asset(
-                city['image']!,
+                city['image'] ?? 'assets/images/default.png',
                 fit: BoxFit.cover,
                 width: 80,
                 height: 80,
@@ -328,7 +531,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 5),
           Text(
-            city['name']!,
+            city['name'] ?? 'Unknown',
             style: const TextStyle(fontSize: 14, color: Colors.black),
           ),
         ],
@@ -366,24 +569,40 @@ class _HomeScreenState extends State<HomeScreen> {
       {
         'name': 'Malon Greens',
         'image': 'assets/images/room1.png',
-        'location': 'Mumbai,Maharashtra',
-        'price': 120,
+        'location': 'Mumbai, Maharashtra',
+        'price': 1200,
         'rating': 4.5,
         'reviews': 120,
       },
       {
         'name': 'Paradise Mint',
         'image': 'assets/images/room2.png',
-        'location': 'Jaipur,Rajasthan',
-        'price': 180,
+        'location': 'Jaipur, Rajasthan',
+        'price': 1800,
         'rating': 4.5,
         'reviews': 120,
       },
       {
         'name': 'Sabro Prime',
         'image': 'assets/images/room3.png',
-        'location': 'Goa,Maharashtra',
-        'price': 150,
+        'location': 'Goa, Maharashtra',
+        'price': 1500,
+        'rating': 4.5,
+        'reviews': 120,
+      },
+      {
+        'name': '7 twalve',
+        'image': 'assets/images/room4.png',
+        'location': 'Pune, Maharashtra',
+        'price': 1500,
+        'rating': 4.5,
+        'reviews': 120,
+      },
+      {
+        'name': 'Savor Delight',
+        'image': 'assets/images/photo5.jpeg',
+        'location': 'Chennai, Tamil Nadu',
+        'price': 1500,
         'rating': 4.5,
         'reviews': 120,
       },
@@ -400,12 +619,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHotelCard(Map<String, dynamic> hotel) {
     return CommonHotelCard(
-      image: hotel['image']!,
-      name: hotel['name']!,
-      rating: hotel['rating']!,
-      reviewCount: hotel['reviews']!,
-      location: hotel['location']!,
-      price: hotel['price']!,
+      image: hotel['image'] ?? 'assets/images/default.png',
+      name: hotel['name'] ?? 'Unknown Hotel',
+      rating: (hotel['rating'] ?? 0.0).toDouble(),
+      reviewCount: hotel['reviews'] ?? 0,
+      location: hotel['location'] ?? 'Unknown Location',
+      price: hotel['price'] ?? 0,
       cardType: CardType.vertical,
       onTap:
           () => Navigator.push(
@@ -423,7 +642,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'name': 'Malon Greens',
         'image': 'assets/images/room1.png',
         'location': 'Mumbai, Maharashtra',
-        'price': 120,
+        'price': 1200,
         'rating': 4.5,
         'reviews': 120,
       },
@@ -431,7 +650,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'name': 'Paradise Mint',
         'image': 'assets/images/room2.png',
         'location': 'Jaipur, Rajasthan',
-        'price': 180,
+        'price': 1800,
         'rating': 4.2,
         'reviews': 95,
       },
@@ -439,7 +658,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'name': 'Sabro Prime',
         'image': 'assets/images/room3.png',
         'location': 'Goa, Maharashtra',
-        'price': 150,
+        'price': 1500,
         'rating': 4.7,
         'reviews': 210,
       },
@@ -453,13 +672,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildNearbyHotelItem(Map<String, dynamic> hotel) {
     return CommonHotelCard(
-      image: hotel['image']!,
-      name: hotel['name']!,
-      rating: hotel['rating']!,
-      reviewCount: hotel['reviews']!,
-      location: hotel['location']!,
-      price: hotel['price']!,
+      image: hotel['image'] ?? 'assets/images/default.png',
+      name: hotel['name'] ?? 'Unknown Hotel',
+      rating: (hotel['rating'] ?? 0.0).toDouble(),
+      reviewCount: hotel['reviews'] ?? 0,
+      location: hotel['location'] ?? 'Unknown Location',
+      price: hotel['price'] ?? 0,
       cardType: CardType.horizontal,
+      onTap:
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => HotelDetailScreen(hotelData: hotel),
+            ),
+          ),
     );
   }
 }
