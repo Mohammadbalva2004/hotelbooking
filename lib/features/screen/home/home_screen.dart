@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+
 import 'package:hotelbooking/features/screen/booking/booking_screen.dart';
 import 'package:hotelbooking/features/screen/filter/filter_screen.dart';
-
 import 'package:hotelbooking/features/screen/hoteldetail/hotel_detail_screen.dart';
 import 'package:hotelbooking/features/screen/profile/profile_screen.dart';
 import 'package:hotelbooking/features/widgets/commonbottomnavbar/common_bottom_nav_bar.dart';
@@ -19,6 +21,89 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _bestHotelsScrollController = ScrollController();
   final GlobalKey _bestHotelsKey = GlobalKey();
   final GlobalKey _nearbyHotelsKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeFirebaseAndData();
+  }
+
+  Future<void> _initializeFirebaseAndData() async {
+    await Firebase.initializeApp();
+    await _checkAndUploadHotelsToFirestore();
+  }
+
+  Future<void> _checkAndUploadHotelsToFirestore() async {
+    try {
+      // Check if hotels already exist in Firestore
+      final QuerySnapshot existingHotels =
+          await FirebaseFirestore.instance
+              .collection('hotels')
+              .where('type', isEqualTo: 'best')
+              .limit(1)
+              .get();
+
+      // If no hotels exist, upload them
+      if (existingHotels.docs.isEmpty) {
+        await _uploadBestHotelsToFirestore();
+      } else {
+        print("Hotels already exist in Firestore. Skipping upload.");
+      }
+    } catch (e) {
+      print("Error checking/uploading hotels: $e");
+    }
+  }
+
+  Future<void> _uploadBestHotelsToFirestore() async {
+    final hotels = [
+      {
+        'id': 'malon_greens', // Unique identifier
+        'name': 'Malon Greens',
+        'image': 'assets/images/room1.png',
+        'location': 'Mumbai, Maharashtra',
+        'price': 120,
+        'rating': 4.5,
+        'reviews': 120,
+      },
+      {
+        'id': 'paradise_mint',
+        'name': 'Paradise Mint',
+        'image': 'assets/images/room2.png',
+        'location': 'Jaipur, Rajasthan',
+        'price': 180,
+        'rating': 4.5,
+        'reviews': 120,
+      },
+      {
+        'id': 'sabro_prime',
+        'name': 'Sabro Prime',
+        'image': 'assets/images/room3.png',
+        'location': 'Goa, Maharashtra',
+        'price': 150,
+        'rating': 4.5,
+        'reviews': 120,
+      },
+    ];
+
+    try {
+      // Use batch write for better performance
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      for (var hotel in hotels) {
+        // Use the hotel ID as document ID to prevent duplicates
+        DocumentReference docRef = FirebaseFirestore.instance
+            .collection('hotels')
+            .doc(hotel['id'] as String);
+
+        batch.set(docRef, hotel);
+      }
+
+      await batch.commit();
+      print("Best hotels uploaded to Firestore successfully.");
+    } catch (e) {
+      print("Error uploading hotels to Firestore: $e");
+    }
+  }
 
   void _navigateToTab(BuildContext context, int index) {
     if (index == 2) {
@@ -75,7 +160,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-
       bottomNavigationBar: CommonBottomNavBar(
         currentIndex: 0,
         onTap: (index) => _navigateToTab(context, index),
@@ -118,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(left: 16.0, right: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -257,7 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
     required VoidCallback onSeeAll,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -326,7 +410,9 @@ class _HomeScreenState extends State<HomeScreen> {
       onTap:
           () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const HotelDetailScreen()),
+            MaterialPageRoute(
+              builder: (_) => HotelDetailScreen(hotelData: hotel),
+            ),
           ),
     );
   }

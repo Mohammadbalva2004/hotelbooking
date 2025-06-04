@@ -29,6 +29,153 @@ class _FilterScreenState extends State<FilterScreen> {
   ];
   List<bool> localitySelections = List.filled(5, false);
 
+  final List<Map<String, dynamic>> allHotels = [
+    {
+      'name': 'Malon Greens',
+      'image': 'assets/images/room1.png',
+      'location': 'Mumbai, Maharashtra',
+      'locality': 'Andheri East',
+      'price': 120,
+      'rating': 5.0,
+      'reviews': 120,
+
+      'popularity': 95,
+    },
+    {
+      'name': 'Sabro Prime',
+      'image': 'assets/images/room2.png',
+      'location': 'Mumbai, Maharashtra',
+      'locality': 'Bandra',
+      'price': 90,
+      'rating': 4.8,
+      'reviews': 110,
+
+      'popularity': 88,
+    },
+    {
+      'name': 'Royal Orchid',
+      'image': 'assets/images/room3.png',
+      'location': 'Mumbai, Maharashtra',
+      'locality': 'Thane',
+      'price': 150,
+      'rating': 4.6,
+      'reviews': 95,
+
+      'popularity': 92,
+    },
+    {
+      'name': 'Sunset Bay',
+      'image': 'assets/images/room1.png',
+      'location': 'Mumbai, Maharashtra',
+      'locality': 'Dadar',
+      'price': 200,
+      'rating': 4.9,
+      'reviews': 150,
+      'popularity': 97,
+    },
+    {
+      'name': 'Green Valley',
+      'image': 'assets/images/room3.png',
+      'location': 'Mumbai, Maharashtra',
+      'locality': 'Navi Mumbai',
+      'price': 85,
+      'rating': 4.3,
+      'reviews': 78,
+
+      'popularity': 82,
+    },
+    {
+      'name': 'Metro Heights',
+      'image': 'assets/images/room2.png',
+      'location': 'Mumbai, Maharashtra',
+      'locality': 'Andheri East',
+      'price': 110,
+      'rating': 4.5,
+      'reviews': 92,
+
+      'popularity': 89,
+    },
+    {
+      'name': 'Luxury Palace',
+      'image': 'assets/images/room1.png',
+      'location': 'Mumbai, Maharashtra',
+      'locality': 'Bandra',
+      'price': 250,
+      'rating': 4.7,
+      'reviews': 130,
+
+      'popularity': 94,
+    },
+  ];
+
+  late List<Map<String, dynamic>> filteredHotels;
+
+  @override
+  void initState() {
+    super.initState();
+
+    filteredHotels = List.from(allHotels);
+  }
+
+  void applyFilters() {
+    setState(() {
+      filteredHotels = List.from(allHotels);
+
+      if (localitySelections.contains(true)) {
+        List<String> selectedLocalities = [];
+        for (int i = 0; i < localities.length; i++) {
+          if (localitySelections[i]) {
+            selectedLocalities.add(localities[i]);
+          }
+        }
+
+        if (selectedLocalities.isNotEmpty) {
+          filteredHotels =
+              filteredHotels
+                  .where(
+                    (hotel) => selectedLocalities.contains(hotel['locality']),
+                  )
+                  .toList();
+        }
+      }
+
+      int minPrice = 0;
+      int maxPrice = 3000;
+
+      if (selectedPriceRange == '\$10 - \$100') {
+        minPrice = 10;
+        maxPrice = 100;
+      } else if (selectedPriceRange == '\$100 - \$500') {
+        minPrice = 100;
+        maxPrice = 500;
+      } else if (selectedPriceRange == '\$500 - \$2500') {
+        minPrice = 500;
+        maxPrice = 2500;
+      }
+
+      filteredHotels =
+          filteredHotels
+              .where(
+                (hotel) =>
+                    hotel['price'] >= minPrice && hotel['price'] <= maxPrice,
+              )
+              .toList();
+
+      if (_selectedOption == 0) {
+        filteredHotels.sort(
+          (a, b) => b['popularity'].compareTo(a['popularity']),
+        );
+      } else if (_selectedOption == 1) {
+      } else if (_selectedOption == 2) {
+        filteredHotels.sort((a, b) => b['rating'].compareTo(a['rating']));
+      } else if (_selectedOption == 3) {
+        filteredHotels.sort((a, b) => a['price'].compareTo(b['price']));
+      } else if (_selectedOption == 4) {
+        filteredHotels.sort((a, b) => b['price'].compareTo(a['price']));
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +186,6 @@ class _FilterScreenState extends State<FilterScreen> {
         elevation: 2,
         height: 60,
         leadingIconColor: Colors.black,
-
         mainTitleStyle: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
@@ -51,40 +197,37 @@ class _FilterScreenState extends State<FilterScreen> {
           const SizedBox(height: 10),
           _buildFilterOptionsRow(),
           Expanded(
-            child: ListView(
-              children: [
-                _buildHotelCard(
-                  image: "assets/images/room1.png",
-                  name: "Malon Greens",
-                  location: "Mumbai, Maharashtra",
-                  price: 120,
-                  rating: 5.0,
-                  reviews: 120,
-                  onTap:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HotelDetailScreen(),
-                        ),
+            child:
+                filteredHotels.isEmpty
+                    ? const Center(
+                      child: Text(
+                        "No hotels match your filters",
+                        style: TextStyle(fontSize: 18),
                       ),
-                ),
-                _buildHotelCard(
-                  image: "assets/images/room2.png",
-                  name: "Sabro Prime",
-                  location: "Mumbai, Maharashtra",
-                  price: 90,
-                  rating: 5.0,
-                  reviews: 120,
-                  onTap:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HotelDetailScreen(),
-                        ),
-                      ),
-                ),
-              ],
-            ),
+                    )
+                    : ListView.builder(
+                      itemCount: filteredHotels.length,
+                      itemBuilder: (context, index) {
+                        final hotel = filteredHotels[index];
+                        return _buildHotelCard(
+                          image: hotel['image']!,
+                          name: hotel['name']!,
+                          location: hotel['location']!,
+                          price: hotel['price']!,
+                          rating: hotel['rating']!,
+                          reviews: hotel['reviews']!,
+                          onTap:
+                              () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          HotelDetailScreen(hotelData: hotel),
+                                ),
+                              ),
+                        );
+                      },
+                    ),
           ),
         ],
       ),
@@ -101,7 +244,6 @@ class _FilterScreenState extends State<FilterScreen> {
             icon: Icons.sort,
             onTap: () => _showSortOptions(context),
           ),
-
           _buildFilterButton(
             label: "Locality",
             icon: Icons.arrow_drop_down,
@@ -305,7 +447,10 @@ class _FilterScreenState extends State<FilterScreen> {
                   label: 'Popularity',
                   index: 0,
                   currentIndex: _selectedOption,
-                  onTap: () => setState(() => _selectedOption = 0),
+                  onTap: () {
+                    setState(() => _selectedOption = 0);
+                    applyFilters();
+                  },
                 ),
                 _buildSortOption(
                   context: context,
@@ -313,7 +458,10 @@ class _FilterScreenState extends State<FilterScreen> {
                   label: 'Near by location',
                   index: 1,
                   currentIndex: _selectedOption,
-                  onTap: () => setState(() => _selectedOption = 1),
+                  onTap: () {
+                    setState(() => _selectedOption = 1);
+                    applyFilters();
+                  },
                 ),
                 _buildSortOption(
                   context: context,
@@ -321,7 +469,10 @@ class _FilterScreenState extends State<FilterScreen> {
                   label: 'Guest rating',
                   index: 2,
                   currentIndex: _selectedOption,
-                  onTap: () => setState(() => _selectedOption = 2),
+                  onTap: () {
+                    setState(() => _selectedOption = 2);
+                    applyFilters();
+                  },
                 ),
                 _buildSortOption(
                   context: context,
@@ -329,7 +480,10 @@ class _FilterScreenState extends State<FilterScreen> {
                   label: 'Price - low to high',
                   index: 3,
                   currentIndex: _selectedOption,
-                  onTap: () => setState(() => _selectedOption = 3),
+                  onTap: () {
+                    setState(() => _selectedOption = 3);
+                    applyFilters();
+                  },
                 ),
                 _buildSortOption(
                   context: context,
@@ -337,7 +491,10 @@ class _FilterScreenState extends State<FilterScreen> {
                   label: 'Price - high to low',
                   index: 4,
                   currentIndex: _selectedOption,
-                  onTap: () => setState(() => _selectedOption = 4),
+                  onTap: () {
+                    setState(() => _selectedOption = 4);
+                    applyFilters();
+                  },
                 ),
                 const SizedBox(height: 10),
               ],
@@ -397,7 +554,7 @@ class _FilterScreenState extends State<FilterScreen> {
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Adjust height based on content
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
@@ -472,6 +629,7 @@ class _FilterScreenState extends State<FilterScreen> {
                             ),
                           ),
                           onPressed: () {
+                            applyFilters();
                             Navigator.pop(context);
                           },
                           child: const Text(
@@ -605,7 +763,10 @@ class _FilterScreenState extends State<FilterScreen> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          applyFilters();
+                          Navigator.pop(context);
+                        },
                         child: const Text(
                           "Apply",
                           style: TextStyle(

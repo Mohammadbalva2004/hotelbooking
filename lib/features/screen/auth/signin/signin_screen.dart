@@ -1,5 +1,7 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hotelbooking/features/screen/auth/forgotpassword/forgot_password_screen.dart';
 import 'package:hotelbooking/features/screen/auth/signup/signup_screen.dart';
 import 'package:hotelbooking/features/screen/home/home_screen.dart';
@@ -17,7 +19,6 @@ class _SigninScreenState extends State<SigninScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _obscureText = true;
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   var email = "";
@@ -32,6 +33,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
       if (!mounted) return;
 
+      // Navigate first, then show snackbar after navigation
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -85,6 +87,47 @@ class _SigninScreenState extends State<SigninScreen> {
     }
   }
 
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) return; 
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Google Sign-In successful"),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Google Sign-In failed: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,7 +154,7 @@ class _SigninScreenState extends State<SigninScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            const SocialLoginRow(),
+            SocialLoginRow(onGoogleTap: signInWithGoogle),
             const SizedBox(height: 10),
             const DividerWithText(),
             const SizedBox(height: 20),
@@ -140,12 +183,15 @@ class _SigninScreenState extends State<SigninScreen> {
                         return null;
                       },
                     ),
-
                     const SizedBox(height: 15),
                     CommonTextFormField(
                       controller: passwordController,
                       labelText: "Password",
-                      hintText: "Enter Password",
+                      hintText: "Enter Password", 
+
+
+
+                      
                       obscureText: _obscureText,
                       prefixIcon: const Icon(Icons.lock),
                       suffixIcon: IconButton(
@@ -156,6 +202,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           color: Colors.grey,
                         ),
                         onPressed: () {
+                          if (!mounted) return;
                           setState(() {
                             _obscureText = !_obscureText;
                           });
@@ -179,6 +226,7 @@ class _SigninScreenState extends State<SigninScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
+                      if (!mounted) return;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -204,13 +252,13 @@ class _SigninScreenState extends State<SigninScreen> {
               width: double.infinity,
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  setState(() {
-                    email = emailController.text.trim();
-                    password = passwordController.text;
-                  });
+                  // Instead of setState here, just update vars (no UI update needed)
+                  email = emailController.text.trim();
+                  password = passwordController.text;
 
                   await userLogin();
                 } else {
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Please fix the errors in the form'),
@@ -219,7 +267,6 @@ class _SigninScreenState extends State<SigninScreen> {
                 }
               },
             ),
-
             const SizedBox(height: 100),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -234,6 +281,7 @@ class _SigninScreenState extends State<SigninScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
+                    if (!mounted) return;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -259,21 +307,27 @@ class _SigninScreenState extends State<SigninScreen> {
   }
 }
 
-// Social login row
 class SocialLoginRow extends StatelessWidget {
-  const SocialLoginRow({super.key});
+  final VoidCallback onGoogleTap;
+
+  const SocialLoginRow({super.key, required this.onGoogleTap});
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: const [
+      children: [
         Expanded(
-          child: SocialButton(image: "assets/icon/google.png", text: "Google"),
+          child: SocialButton(
+            image: "assets/icon/google.png",
+            text: "Google",
+            onTap: onGoogleTap,
+          ),
         ),
-        Expanded(
+        const Expanded(
           child: SocialButton(
             image: "assets/icon/facebook.png",
             text: "Facebook",
+            onTap: null, // Placeholder for future Facebook logic
           ),
         ),
       ],
@@ -284,30 +338,38 @@ class SocialLoginRow extends StatelessWidget {
 class SocialButton extends StatelessWidget {
   final String image;
   final String text;
+  final VoidCallback? onTap;
 
-  const SocialButton({super.key, required this.image, required this.text});
+  const SocialButton({
+    super.key,
+    required this.image,
+    required this.text,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: Container(
-        height: 70,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
-          border: Border.all(color: Colors.grey, width: 2),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [Image.asset(image, height: 30, width: 30), Text(text)],
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 70,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.white,
+            border: Border.all(color: Colors.grey, width: 2),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [Image.asset(image, height: 30, width: 30), Text(text)],
+          ),
         ),
       ),
     );
   }
 }
 
-// Divider with text
 class DividerWithText extends StatelessWidget {
   const DividerWithText({super.key});
 
