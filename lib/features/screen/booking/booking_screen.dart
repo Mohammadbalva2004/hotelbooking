@@ -943,6 +943,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hotelbooking/features/screen/favorite/favorite_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:hotelbooking/features/screen/booking/booking_service.dart';
 import 'package:hotelbooking/features/screen/home/home_screen.dart';
@@ -967,6 +968,11 @@ class _BookingScreenState extends State<BookingScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } else if (index == 1) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const FavoritesScreen()),
       );
     } else if (index == 4) {
       Navigator.pushReplacement(

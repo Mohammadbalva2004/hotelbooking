@@ -146,23 +146,6 @@ class HotelCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Positioned(
-                    right: 20,
-                    top: 20,
-                    child: Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white.withOpacity(0.2),
-                      ),
-                      child: const Icon(
-                        Icons.favorite_border,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                    ),
-                  ),
                 ],
               ),
               Padding(

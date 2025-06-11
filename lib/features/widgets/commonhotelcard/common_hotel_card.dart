@@ -63,11 +63,6 @@ class CommonHotelCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Positioned(
-                    right: 20,
-                    top: 20,
-                    child: _favoriteIcon(size: 50),
-                  ),
                 ],
               ),
               Padding(
@@ -122,11 +117,6 @@ class CommonHotelCard extends StatelessWidget {
                         width: 120,
                         fit: BoxFit.cover,
                       ),
-                    ),
-                    Positioned(
-                      right: 10,
-                      top: 10,
-                      child: _favoriteIcon(size: 30),
                     ),
                   ],
                 ),
@@ -202,18 +192,6 @@ class CommonHotelCard extends StatelessWidget {
           offset: const Offset(0, 4),
         ),
       ],
-    );
-  }
-
-  Widget _favoriteIcon({required double size}) {
-    return Container(
-      height: size,
-      width: size,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white.withOpacity(0.2),
-      ),
-      child: const Icon(Icons.favorite_border, color: Colors.white),
     );
   }
 

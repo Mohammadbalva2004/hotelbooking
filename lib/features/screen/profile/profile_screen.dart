@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hotelbooking/features/screen/auth/signin/signin_screen.dart';
 import 'package:hotelbooking/features/screen/booking/booking_screen.dart';
+import 'package:hotelbooking/features/screen/favorite/favorite_screen.dart';
 import 'package:hotelbooking/features/screen/home/home_screen.dart';
 import 'package:hotelbooking/features/screen/policy/policy_screen.dart';
 import 'package:hotelbooking/features/screen/profileedit/profile_edit_screen.dart';
@@ -29,6 +30,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } else if (index == 1) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const FavoritesScreen()),
       );
     } else if (index == 2) {
       Navigator.pushReplacement(
