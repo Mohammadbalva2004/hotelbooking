@@ -37,6 +37,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
         checkOutTime: widget.bookingDetails['checkOutTime'] ?? '11:00 AM',
         nights: widget.bookingDetails['nights'],
         adults: widget.bookingDetails['adults'],
+        infants: widget.bookingDetails['infants'],
         children: widget.bookingDetails['children'] ?? 0,
         pricePerNight: widget.bookingDetails['pricePerNight'],
         discount: widget.bookingDetails['discount'] ?? 0,

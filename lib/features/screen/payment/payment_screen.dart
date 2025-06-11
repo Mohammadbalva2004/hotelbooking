@@ -9,12 +9,10 @@ import 'package:hotelbooking/features/widgets/commonbottomsheet/Common_BottomShe
 import 'package:intl/intl.dart';
 import 'dart:math';
 
-// Firebase Booking Service
 class BookingService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Generate 5-digit numeric booking ID
   static String _generateBookingId() {
     final random = Random();
     int bookingNumber = 10000 + random.nextInt(90000);
@@ -36,7 +34,6 @@ class BookingService {
     }
   }
 
-  // Generate unique booking ID
   static Future<String> _generateUniqueBookingId() async {
     String bookingId;
     bool isUnique = false;
@@ -72,6 +69,7 @@ class BookingService {
     required int nights,
     required int adults,
     required int children,
+    required int infants,
     required double pricePerNight,
     required double discount,
     required double taxes,
@@ -99,6 +97,7 @@ class BookingService {
         'nights': nights,
         'adults': adults,
         'children': children,
+        'infants': infants,
         'pricePerNight': pricePerNight,
         'discount': discount,
         'taxes': taxes,
@@ -130,11 +129,55 @@ class BookingService {
       return false;
     }
   }
+
+  static Future<bool> deleteBooking(String bookingId) async {
+    try {
+      await _firestore.collection('bookings').doc(bookingId).delete();
+      print('Booking deleted successfully: $bookingId');
+      return true;
+    } catch (e) {
+      print('Error deleting booking: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> moveToDeletedBookings(String bookingId) async {
+    try {
+      final bookingDoc =
+          await _firestore.collection('bookings').doc(bookingId).get();
+
+      if (!bookingDoc.exists) {
+        print('Booking not found: $bookingId');
+        return false;
+      }
+
+      final bookingData = bookingDoc.data()!;
+      bookingData['deletedAt'] = FieldValue.serverTimestamp();
+      bookingData['originalStatus'] = bookingData['status'];
+      bookingData['status'] = 'deleted';
+
+      await _firestore
+          .collection('deleted_bookings')
+          .doc(bookingId)
+          .set(bookingData);
+
+      await _firestore.collection('bookings').doc(bookingId).delete();
+
+      print(
+        'Booking moved to deleted_bookings and removed from bookings: $bookingId',
+      );
+      return true;
+    } catch (e) {
+      print('Error moving booking to deleted: $e');
+      return false;
+    }
+  }
 }
 
 class PaymentScreen extends StatefulWidget {
   final Map<String, dynamic>? hotelData;
   final DateTime? selectedDate;
+  final DateTime? checkOutDate;
   final int? numberOfNights;
   final int? adultCount;
   final int? childrenCount;
@@ -144,6 +187,7 @@ class PaymentScreen extends StatefulWidget {
     super.key,
     this.hotelData,
     this.selectedDate,
+    this.checkOutDate,
     this.numberOfNights,
     this.adultCount,
     this.childrenCount,
@@ -164,14 +208,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
   final TextEditingController expiryDateController = TextEditingController();
 
   int pricePerNight = 120;
-  int nights = 3;
-  int subtotal = 360;
-  int discount = 150;
+  int nights = 1;
+  int subtotal = 120;
+  int discount = 0;
   int taxes = 10;
-  int grandTotal = 320;
-  String checkInDate = "May 06, 2023";
-  String checkOutDate = "May 08, 2023";
-  String guestInfo = "2 adults | 1 children";
+  int grandTotal = 130;
+  String checkInDate = "";
+  String checkOutDate = "";
+  String guestInfo = "";
 
   @override
   void initState() {
@@ -199,18 +243,28 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     subtotal = pricePerNight * nights;
     discount = (subtotal * 0.1).round();
-    taxes = 10;
+    taxes = (subtotal * 0.05).round();
     grandTotal = subtotal - discount + taxes;
 
     if (widget.selectedDate != null) {
-      final checkIn = widget.selectedDate!;
-      final checkOut = checkIn.add(Duration(days: nights));
-      checkInDate = DateFormat('MMM dd, yyyy').format(checkIn);
-      checkOutDate = DateFormat('MMM dd, yyyy').format(checkOut);
+      checkInDate = DateFormat('MMM dd, yyyy').format(widget.selectedDate!);
+
+      if (widget.checkOutDate != null) {
+        checkOutDate = DateFormat('MMM dd, yyyy').format(widget.checkOutDate!);
+      } else {
+        final checkOut = widget.selectedDate!.add(Duration(days: nights));
+        checkOutDate = DateFormat('MMM dd, yyyy').format(checkOut);
+      }
+    } else {
+      final now = DateTime.now();
+      checkInDate = DateFormat('MMM dd, yyyy').format(now);
+      checkOutDate = DateFormat(
+        'MMM dd, yyyy',
+      ).format(now.add(Duration(days: nights)));
     }
 
-    final adults = widget.adultCount ?? 2;
-    final children = widget.childrenCount ?? 1;
+    final adults = widget.adultCount ?? 1;
+    final children = widget.childrenCount ?? 0;
     final infants = widget.infantsCount ?? 0;
 
     List<String> guestParts = [];
@@ -219,7 +273,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       guestParts.add("$children child${children > 1 ? 'ren' : ''}");
     if (infants > 0) guestParts.add("$infants infant${infants > 1 ? 's' : ''}");
 
-    guestInfo = guestParts.join(" | ");
+    guestInfo = guestParts.isNotEmpty ? guestParts.join(" | ") : "1 adult";
   }
 
   Future<String?> _createFirebaseBooking() async {
@@ -238,8 +292,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         checkInTime: "02:00 PM",
         checkOutTime: "12:00 PM",
         nights: nights,
-        adults: widget.adultCount ?? 2,
-        children: widget.childrenCount ?? 1,
+        adults: widget.adultCount ?? 1,
+        children: widget.childrenCount ?? 0,
+        infants: widget.infantsCount ?? 0,
         pricePerNight: pricePerNight.toDouble(),
         discount: discount.toDouble(),
         taxes: taxes.toDouble(),
@@ -298,7 +353,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       child: StatefulBuilder(
         builder: (context, setState) {
           return Container(
-            height: 550,
+            height: 570,
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
@@ -339,7 +394,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       Text(
                         "Booking ID: $bookingId",
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF1190F8),
                         ),
@@ -348,7 +403,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       Text(
                         widget.hotelData?['name'] ?? 'Hotel Name',
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -358,6 +413,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         style: const TextStyle(fontSize: 14),
                       ),
                       Text(guestInfo, style: const TextStyle(fontSize: 14)),
+                      Text(
+                        "$nights night${nights > 1 ? 's' : ''}",
+                        style: const TextStyle(fontSize: 14),
+                      ),
                       const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -387,7 +446,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       child: CustomButton(
                         text: "View Booking",
                         textStyle: const TextStyle(
-                          fontSize: 13,
+                          fontSize: 12,
                           color: Colors.white,
                         ),
                         onPressed: () {
@@ -408,7 +467,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       child: CustomButton(
                         text: "Back To Home",
                         textStyle: const TextStyle(
-                          fontSize: 13,
+                          fontSize: 12,
                           color: Colors.white,
                         ),
                         onPressed: () {
@@ -467,6 +526,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
               value: guestInfo,
               onEditPressed: () => _editGuests(),
             ),
+            EditableInfoRow(
+              title: "Duration",
+              value: "$nights night${nights > 1 ? 's' : ''}",
+              onEditPressed: () => _editDates(),
+            ),
             const Divider(color: Colors.grey, thickness: 1),
             const SectionHeader(title: "Choose how to pay"),
             PaymentOptionRow(
@@ -496,12 +560,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
               value: "₹${subtotal.toStringAsFixed(2)}",
             ),
             PriceDetailRow(
-              label: "Discount",
+              label: "Discount (10%)",
               value: "-₹${discount.toStringAsFixed(2)}",
               isDiscount: true,
             ),
             PriceDetailRow(
-              label: "Occupancy taxes and fees",
+              label: "Occupancy taxes and fees (5%)",
               value: "₹${taxes.toStringAsFixed(2)}",
             ),
             const Divider(color: Colors.grey, thickness: 1),
@@ -562,10 +626,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Widget _buildPropertyCard() {
-    final hotelName = widget.hotelData?['name'] ?? "Malon Greens";
+    final hotelName = widget.hotelData?['name'] ?? "Hotel Name";
     final hotelImage = widget.hotelData?['image'] ?? "assets/images/room1.png";
-    final hotelLocation =
-        widget.hotelData?['location'] ?? "Mumbai, Maharashtra";
+    final hotelLocation = widget.hotelData?['location'] ?? "Location";
     final hotelRating = widget.hotelData?['rating']?.toDouble() ?? 5.0;
     final hotelReviews = widget.hotelData?['reviews'] ?? 120;
 
@@ -891,9 +954,7 @@ class PriceDetailRow extends StatelessWidget {
                   color: Colors.black87,
                 ),
               Text(
-                value.startsWith('-')
-                    ? value
-                    : value.substring(1), // Remove ₹ if already added
+                value.startsWith('-') ? value : value.substring(1),
                 style: TextStyle(
                   fontSize: isTotal ? 20 : 18,
                   fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,

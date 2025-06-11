@@ -103,6 +103,22 @@ class _HomeScreenState extends State<HomeScreen> {
         'rating': 4.5,
         'reviews': 120,
       },
+      {
+        'name': '7 twalve',
+        'image': 'assets/images/room4.png',
+        'location': 'Pune, Maharashtra',
+        'price': 1500,
+        'rating': 4.5,
+        'reviews': 120,
+      },
+      {
+        'name': 'Savor Delight',
+        'image': 'assets/images/photo5.jpeg',
+        'location': 'Chennai, Tamil Nadu',
+        'price': 1500,
+        'rating': 4.5,
+        'reviews': 120,
+      },
     ];
 
     try {
@@ -591,7 +607,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'reviews': 120,
       },
       {
-        'name': '7 twalve',
+        'name': '7 twelve',
         'image': 'assets/images/room4.png',
         'location': 'Pune, Maharashtra',
         'price': 1500,

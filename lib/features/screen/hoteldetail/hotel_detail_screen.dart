@@ -3,6 +3,7 @@ import 'package:hotelbooking/features/screen/payment/payment_screen.dart';
 import 'package:hotelbooking/features/screen/review/review_screen.dart';
 import 'package:hotelbooking/features/widgets/commonbutton/common_buttom.dart';
 import 'package:hotelbooking/features/widgets/commonbottomsheet/Common_BottomSheet.dart';
+import 'package:intl/intl.dart';
 
 class HotelDetailScreen extends StatefulWidget {
   final Map<String, dynamic> hotelData;
@@ -18,8 +19,73 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
   int adultCount = 1;
   int childrenCount = 0;
   int infantsCount = 0;
-  DateTime? selectedDate;
+  DateTime? checkInDate;
+  DateTime? checkOutDate;
   int numberOfNights = 1;
+  bool isSelectingCheckIn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with valid default dates
+    _initializeDates();
+  }
+
+  void _initializeDates() {
+    final now = DateTime.now();
+    // Set check-in to today
+    checkInDate = DateTime(now.year, now.month, now.day);
+    // Set check-out to tomorrow
+    checkOutDate = DateTime(now.year, now.month, now.day + 1);
+    numberOfNights = _calculateNights(checkInDate!, checkOutDate!);
+  }
+
+  bool _isDateValid(DateTime date, {bool isCheckIn = false}) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    if (isCheckIn) {
+      // Check-in date cannot be before today
+      return !date.isBefore(today);
+    } else {
+      // Check-out date must be after check-in date
+      return checkInDate != null && date.isAfter(checkInDate!);
+    }
+  }
+
+  DateTime _getMinimumDate({bool isCheckIn = false}) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    if (isCheckIn) {
+      return today;
+    } else {
+      // For check-out, minimum date is check-in + 1 day
+      return checkInDate?.add(const Duration(days: 1)) ??
+          today.add(const Duration(days: 1));
+    }
+  }
+
+  DateTime _getValidInitialDate({bool isCheckIn = false}) {
+    final minDate = _getMinimumDate(isCheckIn: isCheckIn);
+    final maxDate = DateTime.now().add(const Duration(days: 365));
+
+    DateTime targetDate;
+    if (isCheckIn) {
+      targetDate = checkInDate ?? minDate;
+    } else {
+      targetDate = checkOutDate ?? minDate.add(const Duration(days: 1));
+    }
+
+    // Ensure the target date is within valid range
+    if (targetDate.isBefore(minDate)) {
+      return minDate;
+    } else if (targetDate.isAfter(maxDate)) {
+      return maxDate;
+    } else {
+      return targetDate;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -320,7 +386,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
     );
   }
 
-  // New fixed bottom section
   Widget _buildFixedPriceAndBookingSection() {
     return Container(
       decoration: BoxDecoration(
@@ -341,7 +406,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Price display
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -364,7 +428,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                   ),
                 ],
               ),
-              // Book Now button
               CustomButton(
                 text: "Book Now",
                 onPressed: () => _showDatePicker(context),
@@ -377,14 +440,34 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
     );
   }
 
+  int _calculateNights(DateTime checkIn, DateTime checkOut) {
+    return checkOut.difference(checkIn).inDays;
+  }
+
+  String _formatDate(DateTime date) {
+    return DateFormat('dd MMM yyyy').format(date);
+  }
+
   void _showDatePicker(BuildContext context) {
     final int price = widget.hotelData['price'] ?? 120;
+
+    if (checkInDate == null || checkOutDate == null) {
+      _initializeDates();
+    }
+
+    _validateAndCorrectDates();
+
+    numberOfNights = _calculateNights(checkInDate!, checkOutDate!);
+    final totalPrice = price * numberOfNights;
 
     showCommonBottomSheet(
       context: context,
       child: StatefulBuilder(
         builder: (context, setModalState) {
-          final totalPrice = price * numberOfNights;
+          // Create a key to force rebuild of CalendarDatePicker when switching modes
+          final Key calendarKey = Key(
+            isSelectingCheckIn ? 'check-in' : 'check-out',
+          );
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
@@ -395,7 +478,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      "Select Date",
+                      "Select Dates",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -421,86 +504,249 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 20),
-                CalendarDatePicker(
-                  initialDate: selectedDate ?? DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 365)),
-                  onDateChanged: (date) {
-                    setModalState(() => selectedDate = date);
-                    setState(() => selectedDate = date);
-                  },
-                ),
-                const SizedBox(height: 16),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      "Number of nights:",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.remove_circle_outline),
-                          onPressed: () {
-                            if (numberOfNights > 1) {
-                              setModalState(() => numberOfNights--);
-                              setState(() => numberOfNights--);
-                            }
-                          },
-                          color: const Color(0xFF1190F8),
-                        ),
-                        Text(
-                          numberOfNights.toString(),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setModalState(() {
+                            isSelectingCheckIn = true;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color:
+                                isSelectingCheckIn
+                                    ? const Color(0xFF1190F8)
+                                    : Colors.grey[200],
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                "CHECK-IN",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      isSelectingCheckIn
+                                          ? Colors.white
+                                          : Colors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _formatDate(checkInDate!),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color:
+                                      isSelectingCheckIn
+                                          ? Colors.white
+                                          : Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.add_circle_outline),
-                          onPressed: () {
-                            setModalState(() => numberOfNights++);
-                            setState(() => numberOfNights++);
-                          },
-                          color: const Color(0xFF1190F8),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setModalState(() {
+                            isSelectingCheckIn = false;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color:
+                                !isSelectingCheckIn
+                                    ? const Color(0xFF1190F8)
+                                    : Colors.grey[200],
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(10),
+                              bottomRight: Radius.circular(10),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                "CHECK-OUT",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      !isSelectingCheckIn
+                                          ? Colors.white
+                                          : Colors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _formatDate(checkOutDate!),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color:
+                                      !isSelectingCheckIn
+                                          ? Colors.white
+                                          : Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+
+                const SizedBox(height: 20),
+                // Use a Builder to ensure we have the latest context
+                Builder(
+                  builder: (context) {
+                    // Get the valid dates for the current mode
+                    final DateTime initialDate = _getValidInitialDate(
+                      isCheckIn: isSelectingCheckIn,
+                    );
+                    final DateTime firstDate = _getMinimumDate(
+                      isCheckIn: isSelectingCheckIn,
+                    );
+                    final DateTime lastDate = DateTime.now().add(
+                      const Duration(days: 365),
+                    );
+
+                    // Ensure initialDate is not before firstDate
+                    if (initialDate.isBefore(firstDate)) {
+                      return Text(
+                        "Error: Invalid date range. Please try again.",
+                        style: TextStyle(color: Colors.red),
+                      );
+                    }
+
+                    return CalendarDatePicker(
+                      key: calendarKey, // Force rebuild when switching modes
+                      initialDate: initialDate,
+                      firstDate: firstDate,
+                      lastDate: lastDate,
+                      onDateChanged: (date) {
+                        setModalState(() {
+                          if (isSelectingCheckIn) {
+                            // Validate check-in date
+                            if (_isDateValid(date, isCheckIn: true)) {
+                              checkInDate = date;
+
+                              // Auto-adjust check-out if it's not valid anymore
+                              if (!_isDateValid(
+                                checkOutDate!,
+                                isCheckIn: false,
+                              )) {
+                                checkOutDate = checkInDate!.add(
+                                  const Duration(days: 1),
+                                );
+                              }
+                            } else {
+                              // Show error or set to minimum valid date
+                              checkInDate = _getMinimumDate(isCheckIn: true);
+                              checkOutDate = checkInDate!.add(
+                                const Duration(days: 1),
+                              );
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Check-in date cannot be before today',
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          } else {
+                            if (_isDateValid(date, isCheckIn: false)) {
+                              checkOutDate = date;
+                            } else {
+                              checkOutDate = _getMinimumDate(isCheckIn: false);
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Check-out date must be after check-in date',
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+
+                          numberOfNights = _calculateNights(
+                            checkInDate!,
+                            checkOutDate!,
+                          );
+                        });
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
-                      const Text(
-                        "Total Price:",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Stay Duration:",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "$numberOfNights ${numberOfNights > 1 ? 'Nights' : 'Night'}",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1190F8),
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        "₹$totalPrice",
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1190F8),
-                        ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Total Price:",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "₹${price * numberOfNights}",
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1190F8),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
+
                 const SizedBox(height: 16),
                 CustomButton(
                   text: "Select Guest",
@@ -516,6 +762,21 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
         },
       ),
     );
+  }
+
+  void _validateAndCorrectDates() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    // Ensure check-in is not before today
+    if (checkInDate!.isBefore(today)) {
+      checkInDate = today;
+    }
+
+    // Ensure check-out is after check-in
+    if (!checkOutDate!.isAfter(checkInDate!)) {
+      checkOutDate = checkInDate!.add(const Duration(days: 1));
+    }
   }
 
   void _showGuestSelector(BuildContext context) {
@@ -561,19 +822,45 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.calendar_today,
+                        color: Color(0xFF1190F8),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "${_formatDate(checkInDate!)} - ${_formatDate(checkOutDate!)} · $numberOfNights ${numberOfNights > 1 ? 'nights' : 'night'}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 10),
                 _buildGuestCounter(
                   title: "Adults",
                   subtitle: "Ages 14 or above",
                   count: adultCount,
                   onIncrement: () {
-                    setModalState(() => adultCount++);
                     setState(() => adultCount++);
+                    setModalState(() {});
                   },
                   onDecrement: () {
                     if (adultCount > 1) {
-                      setModalState(() => adultCount--);
                       setState(() => adultCount--);
+                      setModalState(() {});
                     }
                   },
                 ),
@@ -583,13 +870,13 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                   subtitle: "Ages 2-13",
                   count: childrenCount,
                   onIncrement: () {
-                    setModalState(() => childrenCount++);
                     setState(() => childrenCount++);
+                    setModalState(() {});
                   },
                   onDecrement: () {
                     if (childrenCount > 0) {
-                      setModalState(() => childrenCount--);
                       setState(() => childrenCount--);
+                      setModalState(() {});
                     }
                   },
                 ),
@@ -599,13 +886,13 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                   subtitle: "Under 2",
                   count: infantsCount,
                   onIncrement: () {
-                    setModalState(() => infantsCount++);
                     setState(() => infantsCount++);
+                    setModalState(() {});
                   },
                   onDecrement: () {
                     if (infantsCount > 0) {
-                      setModalState(() => infantsCount--);
                       setState(() => infantsCount--);
+                      setModalState(() {});
                     }
                   },
                 ),
@@ -660,23 +947,14 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                 CustomButton(
                   text: "Next",
                   onPressed: () {
-                    if (selectedDate == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please select a date first'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      return;
-                    }
-
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder:
                             (context) => PaymentScreen(
                               hotelData: widget.hotelData,
-                              selectedDate: selectedDate,
+                              selectedDate: checkInDate,
+                              checkOutDate: checkOutDate,
                               numberOfNights: numberOfNights,
                               adultCount: adultCount,
                               childrenCount: childrenCount,

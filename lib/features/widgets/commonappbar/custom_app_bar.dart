@@ -7,6 +7,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onLeadingTap;
   final IconData? actionIcon;
   final VoidCallback? onActionTap;
+  final List<Widget>? actions;
   final double elevation;
   final double height;
   final Color leadingIconColor;
@@ -22,6 +23,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.onLeadingTap,
     this.actionIcon,
     this.onActionTap,
+    this.actions,
     this.elevation = 0,
     this.height = kToolbarHeight,
     this.leadingIconColor = Colors.black,
@@ -36,7 +38,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white, // ← fix here
+      backgroundColor: Colors.white,
       elevation: elevation,
       centerTitle: true,
       leading: IconButton(
@@ -53,7 +55,6 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
                   upperTitleStyle ??
                   const TextStyle(fontSize: 16, color: Colors.grey),
             ),
-
           if (mainTitle != null)
             Text(
               mainTitle!,
@@ -74,6 +75,8 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
             icon: Icon(actionIcon, color: actionIconColor ?? Colors.black),
             onPressed: onActionTap,
           ),
+
+        if (actions != null) ...actions!,
       ],
     );
   }

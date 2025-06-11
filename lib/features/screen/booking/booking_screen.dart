@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hotelbooking/features/screen/booking/booking_service.dart';
 import 'package:hotelbooking/features/screen/home/home_screen.dart';
 import 'package:hotelbooking/features/screen/profile/profile_screen.dart';
 import 'package:hotelbooking/features/widgets/commonappbar/custom_app_bar.dart';
@@ -38,7 +39,11 @@ class _BookingScreenState extends State<BookingScreen> {
       appBar: CommonAppBar(
         mainTitle: 'Booking',
         leadingIcon: Icons.arrow_back_ios,
-        onLeadingTap: () => Navigator.pop(context),
+        onLeadingTap:
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            ),
         elevation: 2,
         height: 60,
         leadingIconColor: Colors.black,
@@ -268,7 +273,7 @@ class BookingList extends StatelessWidget {
   }
 }
 
-class BookingCard extends StatelessWidget {
+class BookingCard extends StatefulWidget {
   final BookingItem booking;
   final bool isUpcoming;
 
@@ -277,6 +282,13 @@ class BookingCard extends StatelessWidget {
     required this.booking,
     required this.isUpcoming,
   });
+
+  @override
+  State<BookingCard> createState() => _BookingCardState();
+}
+
+class _BookingCardState extends State<BookingCard> {
+  bool _isDeleting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -299,7 +311,7 @@ class BookingCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-              color: _getStatusColor(booking.status).withOpacity(0.1),
+              color: _getStatusColor(widget.booking.status).withOpacity(0.1),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(15),
                 topRight: Radius.circular(15),
@@ -312,7 +324,7 @@ class BookingCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Booking ID: ${booking.id}",
+                      "Booking ID: ${widget.booking.id}",
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -320,7 +332,7 @@ class BookingCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "${booking.checkInDate} - ${booking.checkOutDate}",
+                      "${widget.booking.checkInDate} - ${widget.booking.checkOutDate}",
                       style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                   ],
@@ -331,11 +343,11 @@ class BookingCard extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(booking.status),
+                    color: _getStatusColor(widget.booking.status),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    booking.status.toUpperCase(),
+                    widget.booking.status.toUpperCase(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -354,9 +366,9 @@ class BookingCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child:
-                      booking.hotelImage.startsWith('http')
+                      widget.booking.hotelImage.startsWith('http')
                           ? Image.network(
-                            booking.hotelImage,
+                            widget.booking.hotelImage,
                             height: 80,
                             width: 80,
                             fit: BoxFit.cover,
@@ -376,7 +388,7 @@ class BookingCard extends StatelessWidget {
                                 ),
                           )
                           : Image.asset(
-                            booking.hotelImage,
+                            widget.booking.hotelImage,
                             height: 80,
                             width: 80,
                             fit: BoxFit.cover,
@@ -402,7 +414,7 @@ class BookingCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        booking.hotelName,
+                        widget.booking.hotelName,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -419,7 +431,7 @@ class BookingCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              booking.hotelLocation,
+                              widget.booking.hotelLocation,
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey,
@@ -432,15 +444,15 @@ class BookingCard extends StatelessWidget {
                       Row(
                         children: [
                           ...List.generate(
-                            booking.hotelRating.floor(),
+                            widget.booking.hotelRating.floor(),
                             (index) => const Icon(
                               Icons.star,
                               size: 16,
                               color: Colors.amber,
                             ),
                           ),
-                          if (booking.hotelRating -
-                                  booking.hotelRating.floor() >=
+                          if (widget.booking.hotelRating -
+                                  widget.booking.hotelRating.floor() >=
                               0.5)
                             const Icon(
                               Icons.star_half,
@@ -449,7 +461,7 @@ class BookingCard extends StatelessWidget {
                             ),
                           const SizedBox(width: 4),
                           Text(
-                            "(${booking.hotelReviewCount} reviews)",
+                            "(${widget.booking.hotelReviewCount} reviews)",
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
@@ -489,14 +501,14 @@ class BookingCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            booking.checkInDate,
+                            widget.booking.checkInDate,
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            booking.checkInTime,
+                            widget.booking.checkInTime,
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
@@ -512,7 +524,7 @@ class BookingCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        "${booking.nights} Night${booking.nights > 1 ? 's' : ''}",
+                        "${widget.booking.nights} Night${widget.booking.nights > 1 ? 's' : ''}",
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -534,14 +546,14 @@ class BookingCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            booking.checkOutDate,
+                            widget.booking.checkOutDate,
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            booking.checkOutTime,
+                            widget.booking.checkOutTime,
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
@@ -569,7 +581,7 @@ class BookingCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      _formatGuestInfo(booking),
+                      _formatGuestInfo(widget.booking),
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -586,11 +598,11 @@ class BookingCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "\$${booking.pricePerNight.toStringAsFixed(2)} × ${booking.nights} night${booking.nights > 1 ? 's' : ''}",
+                          "\$${widget.booking.pricePerNight.toStringAsFixed(2)} × ${widget.booking.nights} night${widget.booking.nights > 1 ? 's' : ''}",
                           style: const TextStyle(fontSize: 14),
                         ),
                         Text(
-                          "\$${(booking.pricePerNight * booking.nights).toStringAsFixed(2)}",
+                          "\$${(widget.booking.pricePerNight * widget.booking.nights).toStringAsFixed(2)}",
                           style: const TextStyle(fontSize: 14),
                         ),
                       ],
@@ -601,7 +613,7 @@ class BookingCard extends StatelessWidget {
                       children: [
                         const Text("Discount", style: TextStyle(fontSize: 14)),
                         Text(
-                          "-\$${booking.discount.toStringAsFixed(2)}",
+                          "-\$${widget.booking.discount.toStringAsFixed(2)}",
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.green,
@@ -618,7 +630,7 @@ class BookingCard extends StatelessWidget {
                           style: TextStyle(fontSize: 14),
                         ),
                         Text(
-                          "\$${booking.taxes.toStringAsFixed(2)}",
+                          "\$${widget.booking.taxes.toStringAsFixed(2)}",
                           style: const TextStyle(fontSize: 14),
                         ),
                       ],
@@ -637,7 +649,7 @@ class BookingCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "\$${booking.totalPrice.toStringAsFixed(2)}",
+                          "\$${widget.booking.totalPrice.toStringAsFixed(2)}",
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -656,32 +668,49 @@ class BookingCard extends StatelessWidget {
             padding: const EdgeInsets.all(15),
             child: Row(
               children: [
-                if (isUpcoming && booking.status != 'cancelled')
+                if (widget.isUpcoming && widget.booking.status != 'cancelled')
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => _showCancelDialog(context, booking.id),
+                      onTap: _isDeleting ? null : () => _showDeleteDialog(),
                       child: Container(
                         height: 50,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: Colors.grey[200],
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "Cancel",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          color:
+                              _isDeleting ? Colors.grey[300] : Colors.red[50],
+                          border: Border.all(
+                            color: _isDeleting ? Colors.grey : Colors.red,
+                            width: 1,
                           ),
+                        ),
+                        child: Center(
+                          child:
+                              _isDeleting
+                                  ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.grey,
+                                      ),
+                                    ),
+                                  )
+                                  : const Text(
+                                    "Cancle Booking",
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                         ),
                       ),
                     ),
                   ),
-                if (isUpcoming && booking.status != 'cancelled')
+                if (widget.isUpcoming && widget.booking.status != 'cancelled')
                   const SizedBox(width: 10),
-                if (!isUpcoming || booking.status == 'cancelled')
+                if (!widget.isUpcoming || widget.booking.status == 'cancelled')
                   Expanded(
                     child: Container(
                       height: 50,
@@ -691,7 +720,7 @@ class BookingCard extends StatelessWidget {
                       ),
                       child: Center(
                         child: Text(
-                          isUpcoming ? "Cancelled" : "Write a Review",
+                          widget.isUpcoming ? "Cancelled" : "Write a Review",
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 16,
@@ -701,21 +730,25 @@ class BookingCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                if ((!isUpcoming || booking.status == 'cancelled') &&
-                    isUpcoming)
+                if ((!widget.isUpcoming ||
+                        widget.booking.status == 'cancelled') &&
+                    widget.isUpcoming)
                   const SizedBox(width: 10),
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            isUpcoming && booking.status != 'cancelled'
-                                ? 'View details feature coming soon!'
-                                : 'Book again feature coming soon!',
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              widget.isUpcoming &&
+                                      widget.booking.status != 'cancelled'
+                                  ? 'View details feature coming soon!'
+                                  : 'Book again feature coming soon!',
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     },
                     child: Container(
                       height: 50,
@@ -725,7 +758,8 @@ class BookingCard extends StatelessWidget {
                       ),
                       child: Center(
                         child: Text(
-                          isUpcoming && booking.status != 'cancelled'
+                          widget.isUpcoming &&
+                                  widget.booking.status != 'cancelled'
                               ? "View Details"
                               : "Book Again",
                           style: const TextStyle(
@@ -761,62 +795,162 @@ class BookingCard extends StatelessWidget {
     }
   }
 
-  void _showCancelDialog(BuildContext context, String bookingId) {
+  void _showDeleteDialog() {
+    if (!mounted) return;
+
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text("Cancel Booking"),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: Row(
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.red[600],
+                size: 28,
+              ),
+              const SizedBox(width: 10),
+              const Text(
+                "Delete Booking",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
           content: const Text(
-            "Are you sure you want to cancel this booking? A cancellation fee may apply.",
+            "Are you sure you want to delete this booking permanently? This action cannot be undone and all booking data will be removed from the database.",
+            style: TextStyle(fontSize: 16),
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("No"),
-            ),
-            TextButton(
-              onPressed: () async {
-                try {
-                  Navigator.of(context).pop();
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return const Center(child: CircularProgressIndicator());
-                    },
-                  );
-
-                  await FirebaseFirestore.instance
-                      .collection('bookings')
-                      .doc(bookingId)
-                      .update({'status': 'cancelled'});
-
-                  Navigator.of(context).pop();
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Booking cancelled successfully"),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                } catch (e) {
-                  Navigator.of(context).pop();
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Failed to cancel booking: $e"),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
+              onPressed: () {
+                if (Navigator.canPop(dialogContext)) {
+                  Navigator.of(dialogContext).pop();
                 }
               },
-              child: const Text("Yes"),
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (Navigator.canPop(dialogContext)) {
+                  Navigator.of(dialogContext).pop();
+                }
+
+                await _deleteBooking();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                "Delete",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         );
       },
     );
+  }
+
+  Future<void> _deleteBooking() async {
+    if (!mounted) return;
+
+    setState(() {
+      _isDeleting = true;
+    });
+
+    try {
+      bool success = await BookingService.deleteBooking(widget.booking.id);
+
+      if (!mounted) return;
+
+      setState(() {
+        _isDeleting = false;
+      });
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 10),
+                Text(
+                  "Booking deleted successfully",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.error, color: Colors.white),
+                SizedBox(width: 10),
+                Text(
+                  "Failed to delete booking",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isDeleting = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error, color: Colors.white),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  "Error deleting booking: $e",
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
+    }
   }
 
   String _formatGuestInfo(BookingItem booking) {

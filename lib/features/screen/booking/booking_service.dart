@@ -76,6 +76,54 @@ class BookingService {
     }
   }
 
+  // Method to completely delete booking from database
+  static Future<bool> deleteBooking(String bookingId) async {
+    try {
+      await _firestore.collection('bookings').doc(bookingId).delete();
+      print('Booking deleted successfully: $bookingId');
+      return true;
+    } catch (e) {
+      print('Error deleting booking: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> moveToDeletedBookings(String bookingId) async {
+    try {
+      // Get the booking data first
+      final bookingDoc =
+          await _firestore.collection('bookings').doc(bookingId).get();
+
+      if (!bookingDoc.exists) {
+        print('Booking not found: $bookingId');
+        return false;
+      }
+
+      final bookingData = bookingDoc.data()!;
+      bookingData['deletedAt'] = FieldValue.serverTimestamp();
+      bookingData['originalStatus'] = bookingData['status'];
+      bookingData['status'] = 'deleted';
+
+      // Add to deleted_bookings collection
+      await _firestore
+          .collection('deleted_bookings')
+          .doc(bookingId)
+          .set(bookingData);
+
+      // Delete from original bookings collection
+      await _firestore.collection('bookings').doc(bookingId).delete();
+
+      print(
+        'Booking moved to deleted_bookings and removed from bookings: $bookingId',
+      );
+      return true;
+    } catch (e) {
+      print('Error moving booking to deleted: $e');
+      return false;
+    }
+  }
+
+  // Keep the old cancel method if you want to maintain cancelled bookings
   static Future<bool> cancelBooking(String bookingId) async {
     try {
       await _firestore.collection('bookings').doc(bookingId).update({
