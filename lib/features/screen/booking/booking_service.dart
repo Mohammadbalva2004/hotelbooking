@@ -1,17 +1,59 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:math';
 
 class BookingService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  static String _generateBookingId() {
+    final random = Random();
+    int bookingNumber = 10000 + random.nextInt(90000);
+    return bookingNumber.toString();
+  }
+
+  static Future<bool> _isBookingIdUnique(String bookingId) async {
+    try {
+      final querySnapshot =
+          await _firestore
+              .collection('bookings')
+              .where('bookingId', isEqualTo: bookingId)
+              .limit(1)
+              .get();
+      return querySnapshot.docs.isEmpty;
+    } catch (e) {
+      print('Error checking booking ID uniqueness: $e');
+      return false;
+    }
+  }
+
+  static Future<String> _generateUniqueBookingId() async {
+    String bookingId;
+    bool isUnique = false;
+    int attempts = 0;
+    const maxAttempts = 10;
+
+    do {
+      bookingId = _generateBookingId();
+      isUnique = await _isBookingIdUnique(bookingId);
+      attempts++;
+
+      if (attempts >= maxAttempts) {
+        final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+        bookingId = timestamp.substring(timestamp.length - 5);
+        break;
+      }
+    } while (!isUnique);
+
+    return bookingId;
+  }
+
+  // Simplified createBooking method with only essential fields
   static Future<String?> createBooking({
     required String hotelId,
     required String hotelName,
     required String hotelLocation,
     required String hotelImage,
-    required double hotelRating,
-    required int hotelReviewCount,
     required String checkInDate,
     required String checkOutDate,
     required String checkInTime,
@@ -19,25 +61,21 @@ class BookingService {
     required int nights,
     required int adults,
     required int children,
-    required double pricePerNight,
-    required double discount,
-    required double taxes,
-    required double totalPrice,
+    required int infants,
   }) async {
     try {
       final user = _auth.currentUser;
-      if (user == null) {
-        throw Exception('User not authenticated');
-      }
+      if (user == null) throw Exception('User not authenticated');
+
+      final customBookingId = await _generateUniqueBookingId();
 
       final bookingData = {
+        'bookingId': customBookingId,
         'userId': user.uid,
         'hotelId': hotelId,
         'hotelName': hotelName,
         'hotelLocation': hotelLocation,
         'hotelImage': hotelImage,
-        'hotelRating': hotelRating,
-        'hotelReviewCount': hotelReviewCount,
         'checkInDate': checkInDate,
         'checkOutDate': checkOutDate,
         'checkInTime': checkInTime,
@@ -45,18 +83,18 @@ class BookingService {
         'nights': nights,
         'adults': adults,
         'children': children,
-        'pricePerNight': pricePerNight,
-        'discount': discount,
-        'taxes': taxes,
-        'totalPrice': totalPrice,
+        'infants': infants,
         'status': 'confirmed',
         'createdAt': FieldValue.serverTimestamp(),
       };
 
-      final docRef = await _firestore.collection('bookings').add(bookingData);
+      await _firestore
+          .collection('bookings')
+          .doc(customBookingId)
+          .set(bookingData);
 
-      print('Booking created with ID: ${docRef.id}');
-      return docRef.id;
+      print('Booking created with ID: $customBookingId');
+      return customBookingId;
     } catch (e) {
       print('Error creating booking: $e');
       return null;
@@ -76,7 +114,19 @@ class BookingService {
     }
   }
 
-  // Method to completely delete booking from database
+  static Future<bool> cancelBooking(String bookingId) async {
+    try {
+      await _firestore.collection('bookings').doc(bookingId).update({
+        'status': 'cancelled',
+        'cancelledAt': FieldValue.serverTimestamp(),
+      });
+      return true;
+    } catch (e) {
+      print('Error cancelling booking: $e');
+      return false;
+    }
+  }
+
   static Future<bool> deleteBooking(String bookingId) async {
     try {
       await _firestore.collection('bookings').doc(bookingId).delete();
@@ -90,7 +140,6 @@ class BookingService {
 
   static Future<bool> moveToDeletedBookings(String bookingId) async {
     try {
-      // Get the booking data first
       final bookingDoc =
           await _firestore.collection('bookings').doc(bookingId).get();
 
@@ -104,13 +153,11 @@ class BookingService {
       bookingData['originalStatus'] = bookingData['status'];
       bookingData['status'] = 'deleted';
 
-      // Add to deleted_bookings collection
       await _firestore
           .collection('deleted_bookings')
           .doc(bookingId)
           .set(bookingData);
 
-      // Delete from original bookings collection
       await _firestore.collection('bookings').doc(bookingId).delete();
 
       print(
@@ -119,19 +166,6 @@ class BookingService {
       return true;
     } catch (e) {
       print('Error moving booking to deleted: $e');
-      return false;
-    }
-  }
-
-  // Keep the old cancel method if you want to maintain cancelled bookings
-  static Future<bool> cancelBooking(String bookingId) async {
-    try {
-      await _firestore.collection('bookings').doc(bookingId).update({
-        'status': 'cancelled',
-      });
-      return true;
-    } catch (e) {
-      print('Error cancelling booking: $e');
       return false;
     }
   }

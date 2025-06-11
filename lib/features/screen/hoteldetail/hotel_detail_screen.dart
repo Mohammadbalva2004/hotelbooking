@@ -24,11 +24,29 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
   int numberOfNights = 1;
   bool isSelectingCheckIn = true;
 
+  // Add PageController for image slider
+  PageController _pageController = PageController();
+  int _currentImageIndex = 0;
+
+  // List of hotel images for slider
+  List<String> hotelImages = [
+    'assets/images/room1.png',
+    'assets/images/room2.png',
+    'assets/images/room3.png',
+    'assets/images/photo1.jpeg',
+  ];
+
   @override
   void initState() {
     super.initState();
     // Initialize with valid default dates
     _initializeDates();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   void _initializeDates() {
@@ -93,13 +111,14 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            // Fixed image slider at top
+            _buildImageSlider(),
             // Scrollable content
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildHeaderImage(),
                     _buildHotelInfo(),
                     _buildOverviewSection(),
                     _buildPhotosSection(),
@@ -117,34 +136,97 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
     );
   }
 
-  Widget _buildHeaderImage() {
-    return Stack(
-      children: [
-        ClipRRect(
-          borderRadius: const BorderRadius.vertical(
-            bottom: Radius.circular(20),
+  Widget _buildImageSlider() {
+    return Container(
+      height: 250,
+      child: Stack(
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentImageIndex = index;
+              });
+            },
+            itemCount: hotelImages.length,
+            itemBuilder: (context, index) {
+              return ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(20),
+                ),
+                child: Image.asset(
+                  hotelImages[index],
+                  height: 250,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              );
+            },
           ),
-          child: Image.asset(
-            widget.hotelData['image'] ?? "assets/images/room1.png",
-            height: 300,
-            width: double.infinity,
-            fit: BoxFit.cover,
+
+          // Back button
+          Positioned(
+            left: 25,
+            top: 25,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
+              onPressed: () => Navigator.pop(context),
+            ),
           ),
-        ),
-        Positioned(
-          left: 25,
-          top: 25,
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
-            onPressed: () => Navigator.pop(context),
+
+          const Positioned(
+            right: 25,
+            top: 25,
+            child: Icon(Icons.favorite_border, color: Colors.white, size: 30),
           ),
-        ),
-        const Positioned(
-          right: 25,
-          top: 25,
-          child: Icon(Icons.favorite_border, color: Colors.white, size: 30),
-        ),
-      ],
+
+          // Page indicator dots
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                hotelImages.length,
+                (index) => Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color:
+                        _currentImageIndex == index
+                            ? Colors.white
+                            : Colors.white.withOpacity(0.5),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Image counter
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.6),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '${_currentImageIndex + 1}/${hotelImages.length}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -440,6 +522,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
     );
   }
 
+  // Rest of the methods remain the same...
   int _calculateNights(DateTime checkIn, DateTime checkOut) {
     return checkOut.difference(checkIn).inDays;
   }

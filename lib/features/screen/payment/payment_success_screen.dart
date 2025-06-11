@@ -29,8 +29,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
         hotelName: widget.bookingDetails['hotelName'],
         hotelLocation: widget.bookingDetails['hotelLocation'],
         hotelImage: widget.bookingDetails['hotelImage'],
-        hotelRating: widget.bookingDetails['hotelRating'],
-        hotelReviewCount: widget.bookingDetails['hotelReviewCount'],
+
         checkInDate: widget.bookingDetails['checkInDate'],
         checkOutDate: widget.bookingDetails['checkOutDate'],
         checkInTime: widget.bookingDetails['checkInTime'] ?? '2:00 PM',
@@ -39,10 +38,6 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
         adults: widget.bookingDetails['adults'],
         infants: widget.bookingDetails['infants'],
         children: widget.bookingDetails['children'] ?? 0,
-        pricePerNight: widget.bookingDetails['pricePerNight'],
-        discount: widget.bookingDetails['discount'] ?? 0,
-        taxes: widget.bookingDetails['taxes'] ?? 0,
-        totalPrice: widget.bookingDetails['totalPrice'],
       );
 
       setState(() {
