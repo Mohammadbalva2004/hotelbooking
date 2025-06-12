@@ -174,11 +174,11 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
             ),
           ),
 
-          const Positioned(
-            right: 25,
-            top: 25,
-            child: Icon(Icons.favorite_border, color: Colors.white, size: 30),
-          ),
+          // const Positioned(
+          //   right: 25,
+          //   top: 25,
+          //   child: Icon(Icons.favorite_border, color: Colors.white, size: 30),
+          // ),
 
           // Page indicator dots
           Positioned(
@@ -691,10 +691,9 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                 ),
 
                 const SizedBox(height: 20),
-                // Use a Builder to ensure we have the latest context
+
                 Builder(
                   builder: (context) {
-                    // Get the valid dates for the current mode
                     final DateTime initialDate = _getValidInitialDate(
                       isCheckIn: isSelectingCheckIn,
                     );
@@ -705,7 +704,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                       const Duration(days: 365),
                     );
 
-                    // Ensure initialDate is not before firstDate
                     if (initialDate.isBefore(firstDate)) {
                       return Text(
                         "Error: Invalid date range. Please try again.",
@@ -714,18 +712,16 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                     }
 
                     return CalendarDatePicker(
-                      key: calendarKey, // Force rebuild when switching modes
+                      key: calendarKey,
                       initialDate: initialDate,
                       firstDate: firstDate,
                       lastDate: lastDate,
                       onDateChanged: (date) {
                         setModalState(() {
                           if (isSelectingCheckIn) {
-                            // Validate check-in date
                             if (_isDateValid(date, isCheckIn: true)) {
                               checkInDate = date;
 
-                              // Auto-adjust check-out if it's not valid anymore
                               if (!_isDateValid(
                                 checkOutDate!,
                                 isCheckIn: false,
@@ -735,7 +731,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                                 );
                               }
                             } else {
-                              // Show error or set to minimum valid date
                               checkInDate = _getMinimumDate(isCheckIn: true);
                               checkOutDate = checkInDate!.add(
                                 const Duration(days: 1),
@@ -856,7 +851,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
       checkInDate = today;
     }
 
-    // Ensure check-out is after check-in
     if (!checkOutDate!.isAfter(checkInDate!)) {
       checkOutDate = checkInDate!.add(const Duration(days: 1));
     }

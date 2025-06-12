@@ -21,7 +21,7 @@ class ProfileOptionTile extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
+          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
           child: InkWell(
             onTap: onTap,
             child: Row(
@@ -29,12 +29,12 @@ class ProfileOptionTile extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(icon, size: 30),
+                    Icon(icon, size: 25),
                     const SizedBox(width: 10),
                     Text(title, style: const TextStyle(fontSize: 20)),
                   ],
                 ),
-                trailing ?? const Icon(Icons.arrow_forward_ios, size: 30),
+                trailing ?? const Icon(Icons.arrow_forward_ios, size: 25),
               ],
             ),
           ),

@@ -64,8 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           name = userDoc['name'] ?? '';
           email = userDoc['email'] ?? '';
-          profileImageUrl =
-              userDoc['profileImage'] ?? ''; // Fetch profile image URL
+          profileImageUrl = userDoc['profileImage'] ?? '';
           isLoading = false;
         });
       }
@@ -130,7 +129,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     width: 60,
                                     height: 80,
                                     errorBuilder: (context, error, stackTrace) {
-                                      // Fallback if image fails to load
                                       return Image.asset(
                                         "assets/images/profile.jpg",
                                         fit: BoxFit.cover,
@@ -153,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               name,
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
+                                fontSize: 18,
                               ),
                             ),
                             Text(
@@ -171,15 +169,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           strokeWidth: 2,
                         ),
                       Container(
-                        height: 50,
-                        width: 50,
+                        height: 35,
+                        width: 35,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(width: 2, color: Colors.white),
                         ),
                         child: const Icon(
                           Icons.edit_outlined,
-                          size: 30,
+                          size: 20,
                           color: Colors.white,
                         ),
                       ),
@@ -191,10 +189,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ProfileOptionTile(
+      body: Column(
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 35.0),
+            child: ProfileOptionTile(
               icon: Icons.edit,
               title: 'Edit Profile',
               onTap: () {
@@ -206,63 +206,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
             ),
-            ProfileOptionTile(icon: Icons.lock, title: 'Change Password'),
-            ProfileOptionTile(icon: Icons.payment, title: 'Payment Method'),
-            ProfileOptionTile(icon: Icons.calendar_today, title: 'My Bookings'),
-            ProfileOptionTile(
-              icon: Icons.edit,
-              title: 'Dark Mode',
-              trailing: Switch(value: false, onChanged: (bool value) {}),
-            ),
-            ProfileOptionTile(
-              icon: Icons.security,
-              title: 'Privacy Policy',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const PolicyScreen()),
-                );
-              },
-            ),
-            ProfileOptionTile(
-              icon: Icons.description,
-              title: 'Terms & Conditions',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TermConditionScreen(),
-                  ),
-                );
-              },
-              showDivider: false,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-                vertical: 30,
-              ),
-              child: CustomButton(
-                text: "Logout",
-                width: double.infinity,
-                prefixIcon: const Icon(
-                  Icons.logout,
-                  color: Colors.white,
-                  size: 24,
+          ),
+          ProfileOptionTile(icon: Icons.lock, title: 'Change Password'),
+          ProfileOptionTile(icon: Icons.payment, title: 'Payment Method'),
+          ProfileOptionTile(
+            icon: Icons.calendar_today,
+            title: 'My Bookings',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const BookingScreen()),
+              );
+            },
+          ),
+          // ProfileOptionTile(
+          //   icon: Icons.edit,
+          //   title: 'Dark Mode',
+          //   trailing: Switch(value: false, onChanged: (bool value) {}),
+          // ),
+          ProfileOptionTile(
+            icon: Icons.security,
+            title: 'Privacy Policy',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PolicyScreen()),
+              );
+            },
+          ),
+          ProfileOptionTile(
+            icon: Icons.description,
+            title: 'Terms & Conditions',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TermConditionScreen(),
                 ),
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SigninScreen()),
-                    (route) => false,
-                  );
-                },
+              );
+            },
+            showDivider: false,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 60),
+            child: CustomButton(
+              text: "Logout",
+              width: double.infinity,
+              prefixIcon: const Icon(
+                Icons.logout,
+                color: Colors.white,
+                size: 24,
               ),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SigninScreen()),
+                  (route) => false,
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       bottomNavigationBar: CommonBottomNavBar(
         currentIndex: 4,
